@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ContactosEmergencia.dart';
 
-
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,11 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ComunidadUPB',
+      title: 'UPB SEGURA',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -34,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Center(child: Text('UPB SEGURA')), 
+        title: const Text('UPB SEGURA'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
@@ -44,38 +42,32 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const SizedBox(
-              height: 80, 
-              child: DrawerHeader(
-                child: Center( 
-                  child: Text(
-                    'Bienvenido',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                    ),
-                  ),
-                )
+            const DrawerHeader(
+              child: Text(
+                'Bienvenido', 
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                ),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Reportar emergencia'),
+              title: const Text('Inicio'),
               onTap: () {
                 Navigator.pop(context); 
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Contactos de emergencia'),
+              title: const Text('Configuración'),
               onTap: () {
                 Navigator.pop(context); 
               },
             ),
-
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('Información personal'),
+              title: const Text('Acerca de'),
               onTap: () {
                 Navigator.pop(context); 
               },
@@ -83,14 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-
-      body: Column( 
-        children: [
-          Image.asset('assets/images/logoupb.png')
-        ],
-        
+      body: const Center(
+        child: Text('Contenido principal'),
       ),
     );
   }
 }
-
