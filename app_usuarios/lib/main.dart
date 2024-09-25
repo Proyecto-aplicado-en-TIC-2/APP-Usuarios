@@ -86,7 +86,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body: Column( 
         children: [
-          Image.asset('assets/images/logoupb.png')
+          Image.asset('assets/images/logoupb.png'),
+          ElevatedButton(onPressed: (){
+              print('Hola mundo');
+          }, child: Text('Emergencia médica'),
+          ),
+          ElevatedButton(onPressed: (){
+              print('Hola mundo');
+          }, child: Text('Incendio'),
+          ),
+          ElevatedButton(onPressed: (){
+              print('Hola mundo');
+          }, child: Text('Accidente vehicular'),
+          ),
         ],
         
       ),
