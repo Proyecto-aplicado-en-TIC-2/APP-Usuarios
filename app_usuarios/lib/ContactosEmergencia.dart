@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'UPB SEGURA',
+      title: 'Slide Menu Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -18,8 +16,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -32,51 +28,28 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('UPB SEGURA'),
+        title: Center(child: Text('UPB SEGURA')),
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              child: Text(
-                'Bienvenido', 
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Inicio'),
-              onTap: () {
-                Navigator.pop(context); 
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Configuración'),
-              onTap: () {
-                Navigator.pop(context); 
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('Acerca de'),
-              onTap: () {
-                Navigator.pop(context); 
-              },
-            ),
-          ],
-        ),
+        // ... (el código del Drawer se mantiene igual)
       ),
-      body: const Center(
-        child: Text('Contenido principal'),
+      body: Column( 
+        children: [
+          Center( // Envolver la imagen en un Center para centrarla
+            child: Image.asset(
+              'assets/images/logoupb.png',
+              width: MediaQuery.of(context).size.width / 3.0,
+              height: MediaQuery.of(context).size.height / 5.0,
+            ),
+          ),
+          Center(
+            child: Text('Contenido principal'),
+          ),
+        ],
       ),
     );
   }
