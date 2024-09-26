@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ContactosEmergencia.dart'; // Asegúrate de tener esta vista creada
+// Asegúrate de tener esta vista creada
 
 void main() => runApp(const MyApp());
 
@@ -93,56 +93,57 @@ class _MyHomePageState extends State<MyHomePage> {
            decoration: BoxDecoration( 
               border: Border.all(color: Colors.red, width: 2),
           ),
-          margin: EdgeInsets.only(top: 0),
+          margin: const EdgeInsets.only(top: 0),
           child: Center(
-            child:Image.asset('assets/images/logoupb.png') ,
+            child:Image.asset('assets/images/logoupb_.png', width: 400, height: 250)
           ),
         ),
         
-        Center(
-          child: Text('¿Qué sucede?')
+        const Center(
+          child: Text('¿Qué sucede?',
+          style: TextStyle(fontSize: 24))
         ),
-        SizedBox(height:10),
+        const SizedBox(height:20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
-            backgroundColor: Color(0xFFA13F91),
-            padding: EdgeInsets.symmetric(horizontal: 80,vertical: 20),
-            textStyle: TextStyle(fontSize: 20)
+            backgroundColor: const Color(0xFFA13F91),
+            padding: const EdgeInsets.symmetric(horizontal: 80,vertical: 20),
+            textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: Text('Emergencia médica'),
+          child: const Text('Emergencia médica'),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
-            backgroundColor: Color(0xFFFB054B),
-            padding: EdgeInsets.symmetric(horizontal: 60,vertical: 20),
-            textStyle: TextStyle(fontSize: 20)
+            backgroundColor: const Color(0xFFFB054B),
+            padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 20),
+            textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: Text('Emergencia de Incendio'),
+          child: const Text('Emergencia de Incendio'),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
-            backgroundColor: Color(0xFFA70744),
-            padding: EdgeInsets.symmetric(horizontal: 80,vertical: 20),
-            textStyle: TextStyle(fontSize: 20)
+            backgroundColor: const Color(0xFFA70744),
+            padding: const EdgeInsets.symmetric(horizontal: 80,vertical: 20),
+            textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: Text('Accidente vehicular'),
+          child: const Text('Accidente vehicular'),
         ),
       ],
     );
