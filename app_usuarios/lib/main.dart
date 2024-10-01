@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-// Asegúrate de tener esta vista creada
+import 'ContactosEmergencia.dart';
+import 'InfoPersonal.dart';
 
 void main() => runApp(const MyApp());
 
@@ -36,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: const Icon(Icons.menu),
         onPressed: () => _scaffoldKey.currentState?.openDrawer(),
       ),
+      
     );
   }
 
@@ -60,24 +62,30 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home),
+            leading:  Image.asset('assets/icons/sos.png', height: 25, width: 25),
             title: const Text('Reportar emergencia'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: Image.asset('assets/icons/phonenew.png', height: 25, width: 25),
             title: const Text('Contactos de emergencia'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContactosEmergencia()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('Información personal'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Infopersonal()),
+              );
             },
           ),
         ],
@@ -90,12 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       children: [
         Container(
-           decoration: BoxDecoration( 
-              border: Border.all(color: Colors.red, width: 2),
-          ),
+           
           margin: const EdgeInsets.only(top: 0),
           child: Center(
-            child:Image.asset('assets/images/logoupb_.png', width: 400, height: 250)
+            child:Image.asset('assets/images/logoupb_.png', width: 350, height: 250)
           ),
         ),
         
@@ -109,13 +115,21 @@ class _MyHomePageState extends State<MyHomePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFA13F91),
-            padding: const EdgeInsets.symmetric(horizontal: 80,vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 20),
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: const Text('Emergencia médica'),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/icons/icon_botiquin.png', height: 40, width: 40,),
+              const SizedBox(width: 18),
+              const Text('Emergencia médica'),
+            ],
+          ),
+          
         ),
         const SizedBox(height: 20),
         ElevatedButton(
@@ -123,13 +137,20 @@ class _MyHomePageState extends State<MyHomePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFFB054B),
-            padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 42,vertical: 20),
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: const Text('Emergencia de Incendio'),
+           child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/icons/icon_fire.png', height: 40, width: 40,),
+              const SizedBox(width: 18),
+              const Text('Emergencia de incendio'),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
         ElevatedButton(
@@ -137,13 +158,20 @@ class _MyHomePageState extends State<MyHomePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFA70744),
-            padding: const EdgeInsets.symmetric(horizontal: 80,vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal:57,vertical: 20),
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
             print('Hola mundo');
           },
-          child: const Text('Accidente vehicular'),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/icons/icon_accidentevehicular.png', height: 40, width: 40,),
+              const SizedBox(width: 28),
+              const Text('Accidente vehicular'),
+            ],
+          ),
         ),
       ],
     );

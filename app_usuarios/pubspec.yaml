@@ -63,6 +63,11 @@ flutter:
   assets:
     - assets/images/logoupb.png
     - assets/images/logoupb_.png
+    - assets/icons/icon_botiquin.png
+    - assets/icons/icon_fire.png
+    - assets/icons/icon_accidentevehicular.png
+    - assets/icons/sos.png
+    - assets/icons/phonenew.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
