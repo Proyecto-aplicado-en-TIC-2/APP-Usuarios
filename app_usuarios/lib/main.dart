@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'ContactosEmergencia.dart';
 import 'InfoPersonal.dart';
 
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -62,6 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           ListTile(
+            selected: true,
+            selectedTileColor: Colors.blue[100],
             leading:  Image.asset('assets/icons/sos.png', height: 25, width: 25),
             title: const Text('Reportar emergencia'),
             onTap: () {
