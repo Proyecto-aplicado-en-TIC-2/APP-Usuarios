@@ -1,3 +1,4 @@
+import 'package:app_usuarios/InfoPersonal.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 
@@ -11,7 +12,7 @@ class ContactosEmergencia extends StatefulWidget { // Cambiamos a StatefulWidget
 class _ContactosEmergenciaState extends State<ContactosEmergencia> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // Widget para el Drawer (copiado de _MyHomePageState)
+  
   Drawer _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -56,7 +57,10 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
             leading: const Icon(Icons.person), 
             title: const Text('Información personal'),
             onTap: () {
-              Navigator.pop(context); 
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Infopersonal()),
+              ); 
             },
           ),
         ],
@@ -67,17 +71,17 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey, // Agregar la clave al Scaffold
+      key: _scaffoldKey, 
       appBar: AppBar(
         title: Text('Contactos de Emergencia'),
-        leading: IconButton( // Agregar el botón de menú
+        leading: IconButton( 
           icon: Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      drawer: _buildDrawer(), // Usar el widget del Drawer
+      drawer: _buildDrawer(), 
       body: Center(
-        child: Text('Contenido de la vista de Contactos de Emergencia'),
+        child: Text('Hola mundo'),
       ),
     );
   }

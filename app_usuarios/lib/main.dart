@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'ContactosEmergencia.dart';
 import 'InfoPersonal.dart';
-
+import 'Emer_incendio.dart';
+import 'Emer_medica.dart';
+import 'Emer_vehicular.dart';
 
 void main() => runApp(const MyApp());
 
@@ -87,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Infopersonal()),
+                MaterialPageRoute(builder: (context) => const Infopersonal()),
               );
             },
           ),
@@ -122,7 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
-            print('Hola mundo');
+            //print('Hola mundo');
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmerMedica()),
+              );
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -144,7 +150,12 @@ class _MyHomePageState extends State<MyHomePage> {
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
-            print('Hola mundo');
+            //print('Hola mundo');
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmerIncendio()),
+              );
+            
           },
            child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -156,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         const SizedBox(height: 20),
+        
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -165,7 +177,11 @@ class _MyHomePageState extends State<MyHomePage> {
             textStyle: const TextStyle(fontSize: 20)
           ),
           onPressed: () {
-            print('Hola mundo');
+            //print('Hola mundo');
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmerVehicular()),
+              );
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
