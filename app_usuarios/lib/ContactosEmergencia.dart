@@ -1,8 +1,7 @@
-import 'package:app_usuarios/InfoPersonal.dart';
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'InfoPersonal.dart';
 
-class ContactosEmergencia extends StatefulWidget { // Cambiamos a StatefulWidget para usar el _scaffoldKey
+class ContactosEmergencia extends StatefulWidget { 
   const ContactosEmergencia({super.key});
 
   @override
@@ -59,7 +58,7 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Infopersonal()),
+                MaterialPageRoute(builder: (context) => const Infopersonal()),
               ); 
             },
           ),
@@ -73,15 +72,50 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
     return Scaffold(
       key: _scaffoldKey, 
       appBar: AppBar(
-        title: Text('Contactos de Emergencia'),
+        title: const Text('Contactos de Emergencia'),
         leading: IconButton( 
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
       drawer: _buildDrawer(), 
-      body: Center(
-        child: Text('Hola mundo'),
+      body: Center( 
+        child: Column( 
+          mainAxisAlignment: MainAxisAlignment.center, 
+          children: <Widget>[
+            const Text('Contenido de la vista de Información personal'),
+            const SizedBox(height: 30), 
+            //--------------b1
+            ElevatedButton( 
+              style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              foregroundColor: Colors.white,
+              backgroundColor: const Color(0xFFA13F91),
+              padding: const EdgeInsets.symmetric(horizontal: 100,vertical: 60),
+              textStyle: const TextStyle(fontSize: 20)
+            ),
+              onPressed: () {
+                // Acción al presionar el primer botón
+              },
+              child: const Text('Botón 1'),
+            ),
+            const SizedBox(height: 30), 
+            //----------b2
+            ElevatedButton( 
+              style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              foregroundColor: Colors.white,
+              backgroundColor: const Color(0xFFA13F91),
+              padding: const EdgeInsets.symmetric(horizontal: 100,vertical: 60),
+              textStyle: const TextStyle(fontSize: 20)
+            ),
+              onPressed: () {
+                // Acción al presionar el segundo botón
+              },
+              child: const Text('Botón 2'),
+            ),
+          ],
+        ),
       ),
     );
   }

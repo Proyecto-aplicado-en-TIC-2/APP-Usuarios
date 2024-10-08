@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'main.dart'; // Importar main.dart
 import 'ContactosEmergencia.dart';
 
 class Infopersonal extends StatefulWidget {
@@ -49,7 +48,7 @@ class _InfopersonalState extends State<Infopersonal> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContactosEmergencia()),
+                MaterialPageRoute(builder: (context) => const ContactosEmergencia()),
               ); 
             },
           ),
@@ -83,8 +82,8 @@ class _InfopersonalState extends State<Infopersonal> {
         child: Column( 
           mainAxisAlignment: MainAxisAlignment.center, 
           children: <Widget>[
-            Text('Contenido de la vista de Información personal'),
-            SizedBox(height: 30), 
+            const Text('Contenido de la vista de Información personal'),
+            const SizedBox(height: 30), 
             //--------------b1
             ElevatedButton( 
               style: ElevatedButton.styleFrom(
@@ -97,9 +96,9 @@ class _InfopersonalState extends State<Infopersonal> {
               onPressed: () {
                 // Acción al presionar el primer botón
               },
-              child: Text('Botón 1'),
+              child: const Text('Botón 1'),
             ),
-            SizedBox(height: 30), 
+            const SizedBox(height: 30), 
             //----------b2
             ElevatedButton( 
               style: ElevatedButton.styleFrom(
@@ -112,7 +111,7 @@ class _InfopersonalState extends State<Infopersonal> {
               onPressed: () {
                 // Acción al presionar el segundo botón
               },
-              child: Text('Botón 2'),
+              child: const Text('Botón 2'),
             ),
           ],
         ),

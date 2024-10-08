@@ -67,19 +67,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             selected: true,
             selectedTileColor: Colors.blue[100],
-            leading:  Image.asset('assets/icons/sos.png', height: 25, width: 25),
+            leading: const Icon(Icons.warning),
             title: const Text('Reportar emergencia'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: Image.asset('assets/icons/phonenew.png', height: 25, width: 25),
+            leading: const Icon(Icons.contact_phone),
             title: const Text('Contactos de emergencia'),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContactosEmergencia()),
+                MaterialPageRoute(builder: (context) => const ContactosEmergencia()),
               );
             },
           ),
@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //print('Hola mundo');
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EmerMedica()),
+                MaterialPageRoute(builder: (context) => const EmerMedica()),
               );
           },
           child: Row(
@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //print('Hola mundo');
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EmerIncendio()),
+                MaterialPageRoute(builder: (context) => const EmerIncendio()),
               );
             
           },
@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //print('Hola mundo');
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EmerVehicular()),
+                MaterialPageRoute(builder: (context) => const EmerVehicular()),
               );
           },
           child: Row(
