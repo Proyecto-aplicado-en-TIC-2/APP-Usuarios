@@ -11,7 +11,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-
+  // Función para manejar el inicio de sesión
   void _login() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -31,19 +31,12 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.only(top: 0),
-                  child: Center(
-                  child:Image.asset('assets/images/escudo_login_bg.png', width: 150, height: 150)
-                  ),
-                ),
+                Image.asset('assets/images/escudo_login_bg.png', width: 150, height: 150,),
                 SizedBox(height: 20),
-                Text('Bienvenido a UPB Segura!',style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,),),
-                Text('Manten tu datos seguros',style: TextStyle(fontSize: 16,color: Colors.grey[600],
-                  ),
-                ),
+                Text('Bienvenido a UPB Segura!',style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,)),
+                Text('Manten tu datos seguros',style: TextStyle(fontSize: 16, color: Colors.grey[600],),),
                 SizedBox(height: 40),
-
+                
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -51,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                     filled: true,
                     fillColor: Colors.grey[200],
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide.none,
                     ),
                     prefixIcon: Icon(Icons.email),
@@ -68,7 +61,8 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 SizedBox(height: 20),
-                // Campo de contraseña
+
+                
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -92,21 +86,24 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
 
+                // Botón de inicio de sesión
                 ElevatedButton(
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
-                     
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    backgroundColor: const Color(0xFFA70744),
+                    foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                     textStyle: TextStyle(fontSize: 18),
                   ),
-                  child: Text('LOGIN'),
+                  child: Text('Iniciar sesión'),
                 ),
                 SizedBox(height: 30),
+
                 // Texto de registro
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Registro()),
+                          MaterialPageRoute(
+                            builder: (context) => const Registro(),
+                          ),
                         );
                       },
                       child: Text(
@@ -141,5 +140,6 @@ class _LoginPageState extends State<LoginPage> {
 void main() {
   runApp(MaterialApp(
     home: LoginPage(),
+    
   ));
 }
