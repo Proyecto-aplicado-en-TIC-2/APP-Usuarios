@@ -83,37 +83,56 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
         child: Column( 
           mainAxisAlignment: MainAxisAlignment.center, 
           children: <Widget>[
-            const Text('Contenido de la vista de Información personal'),
+            SizedBox(height: 50),
+            const Text('¿Tienes una emergencia?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w200)),
+            const SizedBox(height: 30),
+            const Text('Pulse el botón para comunicarte con la\n            línea de atención deseada', style: TextStyle(fontSize: 16)),
             const SizedBox(height: 30), 
+           
             //--------------b1
             ElevatedButton( 
               style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              foregroundColor: Colors.white,
-              backgroundColor: const Color(0xFFA13F91),
-              padding: const EdgeInsets.symmetric(horizontal: 100,vertical: 60),
-              textStyle: const TextStyle(fontSize: 20)
-            ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFFA13F91),
+                padding: const EdgeInsets.symmetric(horizontal: 80,vertical: 70), 
+                textStyle: const TextStyle(fontSize: 20)
+              ),
               onPressed: () {
-                // Acción al presionar el primer botón
+                  
               },
-              child: const Text('Botón 1'),
+              child: Row( 
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.phone), 
+                  SizedBox(width: 8), 
+                  const Text('Línea \nUPB'),
+                ],
+              ),
             ),
             const SizedBox(height: 30), 
             //----------b2
             ElevatedButton( 
               style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              foregroundColor: Colors.white,
-              backgroundColor: const Color(0xFFA13F91),
-              padding: const EdgeInsets.symmetric(horizontal: 100,vertical: 60),
-              textStyle: const TextStyle(fontSize: 20)
-            ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFFD92427),
+                padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 70), 
+                textStyle: const TextStyle(fontSize: 20)
+              ),
               onPressed: () {
-                // Acción al presionar el segundo botón
+                
               },
-              child: const Text('Botón 2'),
+              child: Row( 
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.phone_in_talk), 
+                  SizedBox(width: 8), 
+                  const Text('Línea \nnacional', style: TextStyle(fontSize: 25)),
+                ],
+              ),
             ),
+            Spacer(),
           ],
         ),
       ),

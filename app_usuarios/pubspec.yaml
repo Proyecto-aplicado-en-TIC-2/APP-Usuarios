@@ -71,6 +71,7 @@ flutter:
     - assets/images/first-aid-kit.png
     - assets/images/fuego.png
     - assets/images/accidente_vehicular.png
+    - assets/images/escudo_login_bg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

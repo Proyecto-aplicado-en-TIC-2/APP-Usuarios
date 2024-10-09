@@ -9,35 +9,44 @@ class EmerMedica extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Emergencia médica'),
       ),
-
-      body: Padding( // Agregar padding para el espaciado
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 0),
-              child: Center(
-                child:Image.asset('assets/images/first-aid-kit.png', width: 190, height: 190)
-              ),
+            Center( 
+              child: Image.asset('assets/images/first-aid-kit.png', width: 190, height: 190),
             ),
-            const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Nombre de la persona afectada',
-              ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
+            SizedBox(height: 20),
+            TextField( // Eliminar const del TextField
               decoration: InputDecoration(
                 labelText: 'Ubicación exacta',
               ),
             ),
-            const SizedBox(height: 16),
-            const TextField(
+            SizedBox(height: 16),
+            TextField( // Eliminar const del TextField
+              decoration: InputDecoration(
+                labelText: 'Nombre de la persona afectada',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField( // Eliminar const del TextField
               decoration: InputDecoration(
                 labelText: 'Descripción de la emergencia',
               ),
             ),
+            SizedBox(height: 60),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFFA13F91),
+                padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 25),
+                textStyle: const TextStyle(fontSize: 20)
+              ),
+              onPressed: () {
+              },
+              child: const Text('Reportar emergencia'), 
+            )
           ],
         ),
       ),
