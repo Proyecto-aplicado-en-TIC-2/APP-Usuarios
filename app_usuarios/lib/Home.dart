@@ -5,34 +5,16 @@ import 'Emer_incendio.dart';
 import 'Emer_medica.dart';
 import 'Emer_vehicular.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ComunidadUPB',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // Widget para el AppBar
   AppBar _buildAppBar() {
     return AppBar(
       title: const Center(child: Text('UPB SEGURA')),
@@ -40,11 +22,9 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: const Icon(Icons.menu),
         onPressed: () => _scaffoldKey.currentState?.openDrawer(),
       ),
-      
     );
   }
 
-  // Widget para el Drawer
   Drawer _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -98,47 +78,42 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Widget para el contenido del body
   Widget _buildBody() {
     return Column(
       children: [
-        Container(
-           
-          margin: const EdgeInsets.only(top: 0),
-          child: Center(
-            child:Image.asset('assets/images/logoupb_.png', width: 350, height: 250)
+        Center(
+          child: Image.asset('assets/images/logoupb_.png', width: 350, height: 250),
+        ),
+        const SizedBox(height: 20),
+        const Center(
+          child: Text(
+            '¿Qué sucede?',
+            style: TextStyle(fontSize: 24),
           ),
         ),
-        
-        const Center(
-          child: Text('¿Qué sucede?',
-          style: TextStyle(fontSize: 24))
-        ),
-        const SizedBox(height:20),
+        const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFA13F91),
-            padding: const EdgeInsets.symmetric(horizontal: 60,vertical: 20),
-            textStyle: const TextStyle(fontSize: 20)
+            padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+            textStyle: const TextStyle(fontSize: 20),
           ),
           onPressed: () {
-            //print('Hola mundo');
             Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EmerMedica()),
-              );
+              context,
+              MaterialPageRoute(builder: (context) => const EmerMedica()),
+            );
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/icons/icon_botiquin.png', height: 40, width: 40,),
+              Image.asset('assets/icons/icon_botiquin.png', height: 40, width: 40),
               const SizedBox(width: 18),
               const Text('Emergencia médica'),
             ],
           ),
-          
         ),
         const SizedBox(height: 20),
         ElevatedButton(
@@ -146,47 +121,43 @@ class _MyHomePageState extends State<MyHomePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFFB054B),
-            padding: const EdgeInsets.symmetric(horizontal: 42,vertical: 20),
-            textStyle: const TextStyle(fontSize: 20)
+            padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 20),
+            textStyle: const TextStyle(fontSize: 20),
           ),
           onPressed: () {
-            //print('Hola mundo');
             Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EmerIncendio()),
-              );
-            
+              context,
+              MaterialPageRoute(builder: (context) => const EmerIncendio()),
+            );
           },
-           child: Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/icons/icon_fire.png', height: 40, width: 40,),
+              Image.asset('assets/icons/icon_fire.png', height: 40, width: 40),
               const SizedBox(width: 18),
               const Text('Emergencia de incendio'),
             ],
           ),
         ),
         const SizedBox(height: 20),
-        
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFA70744),
-            padding: const EdgeInsets.symmetric(horizontal:57,vertical: 20),
-            textStyle: const TextStyle(fontSize: 20)
+            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 20),
+            textStyle: const TextStyle(fontSize: 20),
           ),
           onPressed: () {
-            //print('Hola mundo');
             Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EmerVehicular()),
-              );
+              context,
+              MaterialPageRoute(builder: (context) => const EmerVehicular()),
+            );
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/icons/icon_accidentevehicular.png', height: 40, width: 40,),
+              Image.asset('assets/icons/icon_accidentevehicular.png', height: 40, width: 40),
               const SizedBox(width: 28),
               const Text('Accidente vehicular'),
             ],
@@ -200,10 +171,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _buildAppBar(), // Usar el widget del AppBar
-      drawer: _buildDrawer(), // Usar el widget del Drawer
-      body: _buildBody(), // Usar el widget del body
+      appBar: _buildAppBar(),
+      drawer: _buildDrawer(),
+      body: _buildBody(),
     );
   }
 }
+
 

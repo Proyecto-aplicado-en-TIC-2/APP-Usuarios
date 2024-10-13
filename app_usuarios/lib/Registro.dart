@@ -16,25 +16,25 @@ class Registro extends StatelessWidget {
             Center( 
               child: Image.asset('assets/images/fuego.png', width: 190, height: 190),
             ),
-            SizedBox(height: 20),
-            TextField( // Eliminar const del TextField
+            const SizedBox(height: 20),
+            const TextField( 
               decoration: InputDecoration(
                 labelText: 'Ubicación exacta',
               ),
             ),
-            SizedBox(height: 16),
-            TextField( // Eliminar const del TextField
+            const SizedBox(height: 16),
+            const TextField( 
               decoration: InputDecoration(
                 labelText: 'Magnitud del incendio',
               ),
             ),
-            SizedBox(height: 16),
-            TextField( // Eliminar const del TextField
+            const SizedBox(height: 16),
+            const TextField( 
               decoration: InputDecoration(
                 labelText: '¿Hay personas en riesgo?',
               ),
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),

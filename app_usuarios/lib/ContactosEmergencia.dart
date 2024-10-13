@@ -83,7 +83,7 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
         child: Column( 
           mainAxisAlignment: MainAxisAlignment.center, 
           children: <Widget>[
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             const Text('¿Tienes una emergencia?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w200)),
             const SizedBox(height: 30),
             const Text('Pulse el botón para comunicarte con la\n            línea de atención deseada', style: TextStyle(fontSize: 16)),
@@ -101,12 +101,12 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
               onPressed: () {
                   
               },
-              child: Row( 
+              child: const Row( 
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.phone), 
                   SizedBox(width: 8), 
-                  const Text('Línea \nUPB'),
+                  Text('Línea \nUPB'),
                 ],
               ),
             ),
@@ -123,16 +123,16 @@ class _ContactosEmergenciaState extends State<ContactosEmergencia> {
               onPressed: () {
                 
               },
-              child: Row( 
+              child: const Row( 
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.phone_in_talk), 
                   SizedBox(width: 8), 
-                  const Text('Línea \nnacional', style: TextStyle(fontSize: 25)),
+                  Text('Línea \nnacional', style: TextStyle(fontSize: 25)),
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'Registro.dart';
+import 'Home.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -15,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   void _login() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Iniciando sesión...')),
+        const SnackBar(content: Text('Iniciando sesión...')),
       );
     }
   }
@@ -32,10 +34,10 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset('assets/images/escudo_login_bg.png', width: 150, height: 150,),
-                SizedBox(height: 20),
-                Text('Bienvenido a UPB Segura!',style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,)),
+                const SizedBox(height: 20),
+                const Text('Bienvenido a UPB Segura!',style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,)),
                 Text('Manten tu datos seguros',style: TextStyle(fontSize: 16, color: Colors.grey[600],),),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 
                 TextFormField(
                   controller: _emailController,
@@ -47,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -60,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 
                 TextFormField(
@@ -73,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
                   validator: (value) {
@@ -86,35 +88,32 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-                // Botón de inicio de sesión
+                
                 ElevatedButton(
                   onPressed: _login,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),
                     backgroundColor: const Color(0xFFA70744),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
-                  child: Text('Iniciar sesión'),
-                ),
-                SizedBox(height: 30),
+                  child: const Text('Iniciar sesión'),
 
-                // Texto de registro
+                  
+                ),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("¿No tienes cuenta? "),
+                    const Text("¿No tienes cuenta? "),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Registro(),
+                            builder: (context) => const Home(),
                           ),
                         );
                       },
@@ -138,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: LoginPage(),
     
   ));
