@@ -4,9 +4,12 @@ import 'InfoPersonal.dart';
 import 'Emer_incendio.dart';
 import 'Emer_medica.dart';
 import 'Emer_vehicular.dart';
+import 'RegistrarHoras.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final bool isBrigadista; 
+
+  const Home({super.key, required this.isBrigadista});
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -73,6 +76,19 @@ class _MyHomePageState extends State<Home> {
               );
             },
           ),
+          // Mostrar la opción de "Registrar horas" solo si el usuario es brigadista
+          if (widget.isBrigadista)
+            ListTile(
+              leading: const Icon(Icons.schedule),
+              title: const Text('Registrar horas disponibles'),
+              onTap: () {
+                // Aquí navegas a la vista donde se registran las horas disponibles
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegistrarHorasPage()),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -177,5 +193,8 @@ class _MyHomePageState extends State<Home> {
     );
   }
 }
+
+
+
 
 

@@ -21,7 +21,6 @@ class _InfopersonalState extends State<Infopersonal> {
   // Variable para controlar el modo edición
   bool _isEditing = false;
 
-  // Drawer con las opciones
   Drawer _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -70,7 +69,7 @@ class _InfopersonalState extends State<Infopersonal> {
     );
   }
 
-  // Widget para mostrar campos de perfil
+//Perdfil
   Widget _buildProfileItem(IconData icon, String label, TextEditingController controller) {
     return Row(
       children: [
@@ -86,16 +85,17 @@ class _InfopersonalState extends State<Infopersonal> {
                 
               ),
               _isEditing
+              
                   ? TextFormField(
                       controller: controller,
                       style: const TextStyle(fontSize: 18),
                       decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 2), // Reduce el padding vertical
+                      contentPadding: const EdgeInsets.symmetric(vertical: 2), // Reduce el padding vertical
                       isDense: true, 
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey[400]!),
                       ),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
                     ),
@@ -111,7 +111,7 @@ class _InfopersonalState extends State<Infopersonal> {
     );
   }
 
-  // Método para actualizar la información
+  // actualizar la información
   void _saveChanges() {
     setState(() {
       _isEditing = false;
