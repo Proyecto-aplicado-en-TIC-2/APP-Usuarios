@@ -1,6 +1,7 @@
+import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
-import 'TipoEmergencia.dart'; 
-import 'TiposAdicionalesEmergencia.dart';
+import 'Prioridad.dart'; 
+import 'TipoEmergencia.dart';
 
 class Homescreen extends StatelessWidget {
   const Homescreen({super.key});
@@ -14,7 +15,14 @@ class Homescreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                builder: (context) => MiPerfilScreen(), 
+                ),
+              );
+            },
           ),
         ],
         backgroundColor: Colors.white,
@@ -55,13 +63,13 @@ class Homescreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TipoEmergenciaScreen(), 
+                        builder: (context) => const PrioridadScreen(), 
                       ),
                     );
                   },
                 ),
                 EmergencyButton(
-                  color: const Color.fromARGB(255, 151, 98, 167),
+                  color: const Color.fromARGB(255, 142, 82, 160),
                   icon: Icons.report,
                   text: 'Reportar emergencia médica',
                   onPressed: () {
@@ -76,12 +84,12 @@ class Homescreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => OtrosTiposEmergenciaScreen(), 
+                        builder: (context) => const TiposEmergenciaScreen(), 
                       ),
                     );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown[300],
+                  backgroundColor: const Color.fromARGB(255, 146, 114, 102),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),

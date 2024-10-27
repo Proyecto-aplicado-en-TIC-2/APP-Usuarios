@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'RegistroDatosAdicionales.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -85,6 +86,10 @@ class RegisterScreen extends StatelessWidget {
                     width: 150,
                     child: ElevatedButton(
                       onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>  RegistrodatosadicionalesScreen()),
+                      );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF8A1F1F),
@@ -94,7 +99,8 @@ class RegisterScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                       ),
                       child: const Text(
-                        'Registrarme',
+                        
+                        'Siguiente',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
