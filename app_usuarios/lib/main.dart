@@ -53,7 +53,7 @@ class LoginScreen extends StatelessWidget {
                     hintText: 'Ingresa tu correo institucional de preferencia',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none
+                      borderSide: BorderSide.none,
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
@@ -67,7 +67,7 @@ class LoginScreen extends StatelessWidget {
                     hintText: 'Ingresa tu contraseña',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none
+                      borderSide: BorderSide.none,
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
@@ -94,11 +94,11 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Homescreen()),
+                          MaterialPageRoute(builder: (context) => Homescreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:const Color(0xFF8A1F1F),
+                        backgroundColor: const Color(0xFF8A1F1F),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
@@ -117,7 +117,7 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
                         );
                     },
                     child: const Text(
@@ -134,4 +134,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-
