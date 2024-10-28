@@ -2,6 +2,7 @@ import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
 import 'Prioridad.dart'; 
 import 'TipoEmergencia.dart';
+import 'OtrostiposEmergencias.dart';
 
 class Homescreen extends StatelessWidget {
   const Homescreen({super.key});
@@ -90,7 +91,7 @@ class Homescreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TiposEmergenciaScreen(), 
+                        builder: (context) => const DetalleEmergenciaScreen(), 
                       ),
                     );
                 },

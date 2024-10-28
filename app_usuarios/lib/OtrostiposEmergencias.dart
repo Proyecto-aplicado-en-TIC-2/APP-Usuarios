@@ -1,27 +1,13 @@
-import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
 
-class UbicacionMediaprioridadScreen extends StatelessWidget {
-  const UbicacionMediaprioridadScreen({super.key});
+class DetalleEmergenciaScreen extends StatelessWidget {
+  const DetalleEmergenciaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MiPerfilScreen(),
-                ),
-              );
-            },
-          ),
-        ],
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -30,7 +16,7 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '¿Dónde estás ubicado?',
+              '¿Cuál es la emergencia?',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -39,25 +25,41 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Material(
               elevation: 5,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(10),
               child: Container(
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: Colors.pink[50],
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Bloque o referencia en la que estás ubicado',
+                      'Tipo de emergencia',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: 'Ejemplos: incendio, fuga de agua,..',
+                        fillColor: const Color.fromARGB(255, 241, 235, 238),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Bloque o referencia en la que estas ubicado',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Ejemplos: Bloque 2, Biblioteca, Cafetería, Gimnasio y etc.',
-                        fillColor: Colors.white,
+                        fillColor: const Color.fromARGB(255, 252, 228, 236),
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -73,8 +75,8 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     TextFormField(
                       decoration: InputDecoration(
-                        hintText: 'Puedes dejarlo en blanco',
-                        fillColor: Colors.white,
+                        hintText: 'Opcional',
+                        fillColor: const Color.fromARGB(255, 241, 235, 238),
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -84,15 +86,15 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      '¿Describe lo que te está pasando?',
+                      '¿Qué está pasando?',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      maxLines: 2,
+                      maxLines: 4,
                       decoration: InputDecoration(
                         hintText: 'Descripción breve',
-                        fillColor: Colors.white,
+                        fillColor: const Color.fromARGB(255, 241, 235, 238),
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -105,34 +107,17 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xffffffff),
+                            backgroundColor: const Color.fromARGB(255, 134, 97, 83),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
+                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                           ),
-                          child: const Text(
-                            'Cancelar',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF8A1F1F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
-                          ),
-                          child: const Text(
-                            'Enviar',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          child: const Text('Enviar', style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),

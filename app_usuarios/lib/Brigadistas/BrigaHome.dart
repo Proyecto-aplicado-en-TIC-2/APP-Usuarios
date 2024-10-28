@@ -1,7 +1,8 @@
 import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
 import '../Prioridad.dart'; 
-import '../TipoEmergencia.dart';
+
+import '../OtrostiposEmergencias.dart';
 
 class BrigaHomescreen extends StatefulWidget {
   const BrigaHomescreen({super.key});
@@ -150,7 +151,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TiposEmergenciaScreen(), 
+                        builder: (context) => const DetalleEmergenciaScreen(), 
                       ),
                     );
                 },

@@ -1,6 +1,6 @@
 import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
-import 'DetallerEmergencia.dart';
+import 'OtrostiposEmergencias.dart';
 
 
 class TiposEmergenciaScreen extends StatelessWidget {

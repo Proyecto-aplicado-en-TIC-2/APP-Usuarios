@@ -15,17 +15,17 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
             icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MiPerfilScreen(), 
-                      ),
-                    );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MiPerfilScreen(),
+                ),
+              );
             },
           ),
         ],
         backgroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +39,7 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Material(
-              elevation: 5, 
+              elevation: 5,
               borderRadius: BorderRadius.circular(15),
               child: Container(
                 padding: const EdgeInsets.all(20.0),
@@ -68,7 +68,7 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Si tu situación te impide enviar o reaccionar la aplicación realizará el reporte automáticamente',
+                      'Si tu situación te impide enviar o reaccionar, la aplicación realizará el reporte automáticamente',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black87,
@@ -99,8 +99,8 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Homescreen()),
+                              context,
+                              MaterialPageRoute(builder: (context) => const Homescreen()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -116,15 +116,14 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
                           ),
                         ),
                         ElevatedButton(
-
                           onPressed: () {
                             Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Homescreen()),
+                              context,
+                              MaterialPageRoute(builder: (context) => const Homescreen()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:const  Color(0xFF8A1F1F),
+                            backgroundColor: const Color(0xFF8A1F1F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -147,3 +146,4 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
     );
   }
 }
+

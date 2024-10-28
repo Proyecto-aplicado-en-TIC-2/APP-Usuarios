@@ -176,7 +176,7 @@ class RegisterScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                       ),
                       child: const Text(
-                        'Registrarme',
+                        'Continuar',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
