@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'Registro.dart';
-import 'home.dart';
 import 'APH/aphome.dart';
 
 void main() => runApp(const MyApp());

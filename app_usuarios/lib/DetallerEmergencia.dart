@@ -47,7 +47,6 @@ class DetalleEmergenciaScreen extends StatelessWidget {
                           color: const Color.fromARGB(255, 241, 235, 238),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text('Incendio', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(height: 20),
                       const Text(
@@ -107,7 +106,7 @@ class DetalleEmergenciaScreen extends StatelessWidget {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-
+                              Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 134, 97, 83),

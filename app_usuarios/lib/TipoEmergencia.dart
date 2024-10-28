@@ -18,7 +18,7 @@ class TiposEmergenciaScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                builder: (context) => MiPerfilScreen(), 
+                builder: (context) => const MiPerfilScreen(), 
                 ),
               );
             },
