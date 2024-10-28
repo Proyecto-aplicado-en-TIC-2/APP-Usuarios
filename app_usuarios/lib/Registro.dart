@@ -1,3 +1,4 @@
+import 'package:appv2/Constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -27,8 +28,8 @@ class RegisterScreen extends StatelessWidget {
       return;
     }
 
-    // Cambia "localhost" por "10.0.2.2" para emuladores de Android o por tu IP local para dispositivos físicos
-    final Uri url = Uri.parse('http://10.0.2.2:3000/auth/register/upb-community');
+    // URL de la API
+    final Uri url = Uri.parse(APIConstants.registerEndpoint);
 
     try {
       // Realizar la solicitud POST
@@ -36,12 +37,13 @@ class RegisterScreen extends StatelessWidget {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'user': {
-            'firstName': firstName,
-            'lastName': lastName,
-            'mail': email,
-          },
           'password': password,
+          'user': {
+            'names': firstName,
+            'last_names': lastName,
+            'mail': email,
+            'relationship_with_the_university': 'Student'
+          },
         }),
       );
 
@@ -65,10 +67,10 @@ class RegisterScreen extends StatelessWidget {
           const SnackBar(content: Text('Registro exitoso')),
         );
 
-        // Redirigir al inicio de sesión
-        Navigator.push(
+        // Redirigir al inicio de sesión en main.dart
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (context) => const MyApp()),
         );
       } else {
         // Mostrar mensaje de error en caso de fallo en el registro
@@ -188,7 +190,7 @@ class RegisterScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(builder: (context) =>  LoginScreen()),
                       );
                     },
                     style: OutlinedButton.styleFrom(

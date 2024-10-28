@@ -1,5 +1,6 @@
 import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Prioridad.dart'; 
 import '../TipoEmergencia.dart';
 
@@ -12,6 +13,25 @@ class BrigaHomescreen extends StatefulWidget {
 
 class _HomescreenState extends State<BrigaHomescreen> {
   bool isActive = true;
+  bool isBrigadeAccount = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? role = prefs.getString('user_role');
+
+    // Verifica si el rol es "brigade_accounts"
+    if (role == 'brigade_accounts') {
+      setState(() {
+        isBrigadeAccount = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,66 +71,71 @@ class _HomescreenState extends State<BrigaHomescreen> {
               'Jaider Joham Morales Franco',
               style: TextStyle(fontSize: 20),
             ),
-            const Text(
-              'Brigadista',
-              style: TextStyle(
+            Text(
+              isBrigadeAccount ? 'Brigadista' : 'Usuario',
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
               ),
             ),
             const SizedBox(height: 25),
-            Material(
-              elevation: 5,
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Colors.pink[50],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Estado del brigadista',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+
+            // Mostrar esta sección solo si el usuario es brigade_accounts
+            if (isBrigadeAccount)
+              Material(
+                elevation: 5,
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.pink[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Estado del brigadista',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      isActive ? 'Activo' : 'Inactivo',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: isActive ? Colors.red : Colors.grey,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 10),
+                      Text(
+                        isActive ? 'Activo' : 'Inactivo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isActive ? Colors.red : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isActive = !isActive;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 134, 97, 83),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              isActive = !isActive;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 134, 97, 83),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Actualizar estado',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        child: const Text(
-                          'Actualizar estado',
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
+
+            // Resto del contenido
             const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
