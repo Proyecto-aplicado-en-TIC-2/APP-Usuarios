@@ -1,10 +1,10 @@
+import 'package:appv2/websocket_service.dart'; // Importa tu servicio de WebSocket
 import 'package:appv2/Brigadistas/BrigaHome.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -73,14 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('jwt_token', token);
           await prefs.setString('user_role', role);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Inicio de sesión exitoso')),
-          );
+          // Conecta al WebSocket
+          final webSocketService = WebSocketService();
+          await webSocketService.connect();
 
-          // Pausa breve antes de navegar
-          await Future.delayed(const Duration(milliseconds: 500));
-
-          // Navega a la pantalla de inicio (por ejemplo, BrigaHomescreen)
+          // Navega a la pantalla de inicio
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
