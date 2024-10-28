@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'aphome.dart';
 import '../MiPerfil.dart';
 
-class APHIncidenciaMedicaScreen extends StatelessWidget {
+class APHIotrasincidenciasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,23 +27,19 @@ class APHIncidenciaMedicaScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Incidencia médica',
+              'Otros tipos de incidencias',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20),
-            buildTextField('Prioridad', 'Ingrese la prioridad de la incidencia'),
+            buildTextField('Tipo de incidencia', '' ),
+            buildTextField('Bloque o referencia de la incidencia',
+                'Ejemplos: Bloque 2, Biblioteca, Cafetería, Gimnasio y etc.'),
+            buildTextField('Número de aula', 'Opcional'),
             buildTextField(
-                'Bloque o referencia de la incidencia médica', 'Ingrese la ubicación'),
-            buildTextField('Número de aula', 'Puede dejarlo en blanco'),
-            buildTextField(
-                'Nombre de quien necesita ayuda', 'Ingrese el nombre completo'),
-            buildTextField(
-                'Id universitario', 'De no tener, use el número de cédula'),
-            buildTextField('¿Describe lo que te está pasando?', 'Descripción breve',
-                maxLines: 4),
+                '¿Describe lo que te está pasando?', 'Descripción breve', maxLines: 4),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -53,7 +49,7 @@ class APHIncidenciaMedicaScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => APHHomeScreen()),
-                    );
+                      );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 134, 97, 83),
@@ -76,7 +72,7 @@ class APHIncidenciaMedicaScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField(String label, String placeholder, {int maxLines = 1}) {
+  Widget buildTextField(String label, String placeholder, {int maxLines = 1, bool isReadOnly = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -89,6 +85,7 @@ class APHIncidenciaMedicaScreen extends StatelessWidget {
           const SizedBox(height: 10),
           TextFormField(
             maxLines: maxLines,
+            readOnly: isReadOnly,
             decoration: InputDecoration(
               hintText: placeholder,
               fillColor: const Color.fromARGB(255, 252, 228, 236),

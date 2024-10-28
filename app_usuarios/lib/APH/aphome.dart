@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'AtenderEmergency.dart';
+import 'Incidentes.dart';
+import 'Informes.dart';
+import '../MiPerfil.dart';
 
 class APHHomeScreen extends StatelessWidget {
   @override
@@ -10,7 +14,12 @@ class APHHomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
+                );
+            },
           ),
         ],
         backgroundColor: Colors.white,
@@ -55,6 +64,12 @@ class APHHomeScreen extends StatelessWidget {
               descripcion: 'Descripción',
               prioridad: 'Alta',
               prioridadColor: Colors.red,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => APHPrioridadAltaScreen()),
+                );
+              },
             ),
             const SizedBox(height: 30),
             const Text(
@@ -87,7 +102,7 @@ class APHHomeScreen extends StatelessWidget {
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Acción para llamar
+                        
                       },
                       icon: const Icon(Icons.phone, color: Colors.white),
                       label: const Text(
@@ -111,6 +126,22 @@ class APHHomeScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => APHHomeScreen()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => APHIncidentesScreen()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InformesScreen()),
+            );
+          }
         },
         items: const [
           BottomNavigationBarItem(
@@ -138,6 +169,7 @@ class IncidenciaCard extends StatelessWidget {
   final String descripcion;
   final String prioridad;
   final Color prioridadColor;
+  final VoidCallback onTap;
 
   IncidenciaCard({
     required this.nombre,
@@ -146,70 +178,76 @@ class IncidenciaCard extends StatelessWidget {
     required this.descripcion,
     required this.prioridad,
     required this.prioridadColor,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          color: Colors.pink[50],
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nombre,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: onTap,
+      child: Material(
+        elevation: 5,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: Colors.pink[50],
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nombre,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Ubicación: $ubicacion  Salón: $salon',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
+                    const SizedBox(height: 10),
+                    Text(
+                      'Ubicación: $ubicacion  Salón: $salon',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    descripcion,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                    const SizedBox(height: 5),
+                    Text(
+                      descripcion,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: prioridadColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                prioridad,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: prioridadColor,
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            const Icon(Icons.arrow_forward_ios, color: Colors.black),
-          ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: prioridadColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  prioridad,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: prioridadColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Icon(Icons.arrow_forward_ios, color: Colors.black),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+

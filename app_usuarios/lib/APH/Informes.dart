@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'aphome.dart';
-import 'Informes.dart';
-import 'IncidenciaMedica.dart';
-import 'otrasincidencia.dart';
+import 'Incidentes.dart';
 import '../MiPerfil.dart';
+import 'InformePendiente.dart';
 
-class APHIncidentesScreen extends StatelessWidget {
+class InformesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,9 +16,9 @@ class APHIncidentesScreen extends StatelessWidget {
             icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
-                );
+                context,
+                MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
+              );
             },
           ),
         ],
@@ -31,103 +30,94 @@ class APHIncidentesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Reportar',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => APHIncidenciaMedicaScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: const Center(
-                child: Text(
-                  'Incidencia médica',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => APHIotrasincidenciasScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: const Center(
-                child: Text(
-                  'Otro tipo de incidencia',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Historial de incidentes',
+              'Informes pendientes',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
-            IncidenciaCard(
+            InformeCard(
               nombre: 'Jaider Joham Morales',
               ubicacion: 'Bloque 11',
               salon: '202',
               descripcion: 'Descripción',
               prioridad: 'Alta',
               prioridadColor: Colors.red,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => APHInformePendienteScreen()),
+                );
+              },
             ),
             const SizedBox(height: 10),
-            IncidenciaCard(
-              nombre: 'Otro tipo de incidencia',
+            const Text(
+              'Ninguna',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Historial de Informes',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            InformeCard(
+              nombre: 'Jaider Joham Morales',
               ubicacion: 'Bloque 11',
               salon: '202',
               descripcion: 'Descripción',
-              prioridad: '',
-              prioridadColor: Colors.transparent,
+              prioridad: 'Alta',
+              prioridadColor: Colors.red,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => APHHomeScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            InformeCard(
+              nombre: 'Jaider Joham Morales',
+              ubicacion: 'Bloque 11',
+              salon: '202',
+              descripcion: 'Descripción',
+              prioridad: 'Alta',
+              prioridadColor: Colors.red,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => APHHomeScreen()),
+                );
+              },
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
+        currentIndex: 2,
         onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => APHHomeScreen()),
-              );
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InformesScreen()),
-              );
-              break;
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => APHHomeScreen()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => APHIncidentesScreen()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InformesScreen()),
+            );
           }
         },
         items: const [
@@ -149,35 +139,36 @@ class APHIncidentesScreen extends StatelessWidget {
   }
 }
 
-class IncidenciaCard extends StatelessWidget {
+class InformeCard extends StatelessWidget {
   final String nombre;
   final String ubicacion;
   final String salon;
   final String descripcion;
   final String prioridad;
   final Color prioridadColor;
+  final VoidCallback onTap;
 
-  IncidenciaCard({
+  const InformeCard({
     required this.nombre,
     required this.ubicacion,
     required this.salon,
     required this.descripcion,
     required this.prioridad,
     required this.prioridadColor,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(15),
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: Colors.pink[50],
-          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(10),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -188,7 +179,7 @@ class IncidenciaCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             Text(
               'Ubicación: $ubicacion  Salón: $salon',
               style: const TextStyle(
@@ -204,28 +195,25 @@ class IncidenciaCard extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
-            if (prioridad.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: prioridadColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  prioridad,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: prioridadColor,
-                  ),
+            const SizedBox(height: 5),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: prioridadColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                prioridad,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: prioridadColor,
                 ),
               ),
-            ],
+            ),
           ],
         ),
       ),
     );
   }
 }
-
 

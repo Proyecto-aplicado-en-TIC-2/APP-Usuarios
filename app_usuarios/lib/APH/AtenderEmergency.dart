@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import '../MiPerfil.dart';
 
 class APHPrioridadAltaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text('UPB Segura'),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
+                );
+            },
           ),
         ],
         backgroundColor: Colors.white,
@@ -76,7 +81,7 @@ class APHPrioridadAltaScreen extends StatelessWidget {
                   onPressed: () {
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown[300],
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -91,7 +96,7 @@ class APHPrioridadAltaScreen extends StatelessWidget {
                   onPressed: () {
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown[300],
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

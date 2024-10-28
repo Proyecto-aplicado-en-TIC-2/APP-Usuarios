@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Registro.dart';
 import 'home.dart';
+import 'APH/aphome.dart';
 
 void main() => runApp(const MyApp());
 
@@ -94,7 +95,7 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Homescreen()),
+                          MaterialPageRoute(builder: (context) =>  APHHomeScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -111,6 +112,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 20),
                 Center(
                   child: TextButton(
