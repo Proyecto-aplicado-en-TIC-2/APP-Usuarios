@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Registro.dart';
 import 'APH/aphome.dart';
+import 'Brigadistas/BrigaHome.dart';
 
 void main() => runApp(const MyApp());
 
@@ -94,7 +95,7 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>  APHHomeScreen()),
+                          MaterialPageRoute(builder: (context) =>  const BrigaHomescreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(

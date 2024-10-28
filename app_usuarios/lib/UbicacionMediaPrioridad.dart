@@ -1,3 +1,4 @@
+import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
 
 class UbicacionMediaprioridadScreen extends StatelessWidget {
@@ -11,7 +12,14 @@ class UbicacionMediaprioridadScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MiPerfilScreen(), 
+                      ),
+                    );
+            },
           ),
         ],
         backgroundColor: Colors.white,

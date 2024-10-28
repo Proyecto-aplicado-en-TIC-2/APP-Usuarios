@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'MiPerfil.dart';
 
 class UbicacionAltaprioridadScreen extends StatelessWidget {
   const UbicacionAltaprioridadScreen({super.key});
@@ -12,7 +13,14 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MiPerfilScreen(), 
+                      ),
+                    );
+            },
           ),
         ],
         backgroundColor: Colors.white,
@@ -31,7 +39,7 @@ class UbicacionAltaprioridadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Material(
-              elevation: 5, // Sombra alrededor del contenedor
+              elevation: 5, 
               borderRadius: BorderRadius.circular(15),
               child: Container(
                 padding: const EdgeInsets.all(20.0),
