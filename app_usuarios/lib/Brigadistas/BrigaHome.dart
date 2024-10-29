@@ -1,7 +1,8 @@
 import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Prioridad.dart'; 
+import 'package:url_launcher/url_launcher.dart';
+import '../Prioridad.dart';
 import '../TipoEmergencia.dart';
 
 class BrigaHomescreen extends StatefulWidget {
@@ -14,22 +15,38 @@ class BrigaHomescreen extends StatefulWidget {
 class _HomescreenState extends State<BrigaHomescreen> {
   bool isActive = true;
   bool isBrigadeAccount = false;
+  String greetingMessage = '';
+  String userName = 'Usuario';
+  String userRole = 'Usuario';
 
   @override
   void initState() {
     super.initState();
-    _loadUserRole();
+    _loadUserData();
   }
 
-  Future<void> _loadUserRole() async {
+  Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? role = prefs.getString('user_role');
+    String? names = prefs.getString('names') ?? 'Usuario';
+    String? lastNames = prefs.getString('lastNames') ?? '';
+    String? role = prefs.getString('user_role') ?? 'Usuario';
 
-    // Verifica si el rol es "brigade_accounts"
-    if (role == 'brigade_accounts') {
-      setState(() {
-        isBrigadeAccount = true;
-      });
+    setState(() {
+      userName = '$names $lastNames';
+      userRole = role;
+      greetingMessage = _getGreetingMessage();
+      isBrigadeAccount = (role == 'brigade_accounts');
+    });
+  }
+
+  String _getGreetingMessage() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Buenos días';
+    } else if (hour < 18) {
+      return 'Buenas tardes';
+    } else {
+      return 'Buenas noches';
     }
   }
 
@@ -46,7 +63,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                builder: (context) => MiPerfilScreen(), 
+                  builder: (context) => MiPerfilScreen(),
                 ),
               );
             },
@@ -59,20 +76,20 @@ class _HomescreenState extends State<BrigaHomescreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Buenos días',
-              style: TextStyle(
+            Text(
+              greetingMessage,
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Jaider Joham Morales Franco',
-              style: TextStyle(fontSize: 20),
+            Text(
+              userName,
+              style: const TextStyle(fontSize: 20),
             ),
             Text(
-              isBrigadeAccount ? 'Brigadista' : 'Usuario',
+              userRole,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -148,7 +165,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PrioridadScreen(), 
+                        builder: (context) => const PrioridadScreen(),
                       ),
                     );
                   },
@@ -161,7 +178,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PrioridadScreen(), 
+                        builder: (context) => const PrioridadScreen(),
                       ),
                     );
                   },
@@ -173,11 +190,11 @@ class _HomescreenState extends State<BrigaHomescreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TiposEmergenciaScreen(), 
-                      ),
-                    );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TiposEmergenciaScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 146, 114, 102),
@@ -213,14 +230,14 @@ class EmergencyButton extends StatelessWidget {
   final Color color;
   final IconData icon;
   final String text;
-  final VoidCallback onPressed; 
+  final VoidCallback onPressed;
 
   const EmergencyButton({
     super.key,
     required this.color,
     required this.icon,
     required this.text,
-    required this.onPressed, 
+    required this.onPressed,
   });
 
   @override
@@ -229,7 +246,7 @@ class EmergencyButton extends StatelessWidget {
       width: 160,
       height: 160,
       child: ElevatedButton(
-        onPressed: onPressed, 
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           shape: RoundedRectangleBorder(
@@ -256,6 +273,15 @@ class EmergencyButton extends StatelessWidget {
 
 class EmergencyCallBox extends StatelessWidget {
   const EmergencyCallBox({super.key});
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      print('Error al intentar realizar la llamada: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +319,7 @@ class EmergencyCallBox extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => _makePhoneCall('+573004222321'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.pink[300],
               shape: RoundedRectangleBorder(

@@ -66,11 +66,19 @@ class _LoginScreenState extends State<LoginScreen> {
         if (responseData['operation'] == true && responseData['access_token'] != null) {
           final String token = responseData['access_token'];
           final String role = responseData['roles'];
+          final String userid = responseData['userid'];
+          final String names = responseData['names'];
+          final String lastName = responseData['lastNames'];
+
 
           // Guarda el token y el rol en SharedPreferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);
           await prefs.setString('user_role', role);
+          await prefs.setString('userid', userid);
+          await prefs.setString('names', names);
+          await prefs.setString('lastNames', lastName);
+
 
           // Conecta al WebSocket
           final webSocketService = WebSocketService();

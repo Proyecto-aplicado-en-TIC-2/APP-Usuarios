@@ -9,7 +9,7 @@ class WebSocketService {
   Future<void> connect() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwt_token');
-    print('Token recuperado: $token'); // Confirma que el token existe
+    print('Token recuperado: $token');
 
     if (token == null) {
       print('No se encontró el token');
@@ -18,31 +18,41 @@ class WebSocketService {
 
     // Configura y conecta el WebSocket
     socket = IO.io(
-      APIConstants.WebSockets_connection, // URL del WebSocket
+      APIConstants.WebSockets_connection,
       IO.OptionBuilder()
           .setTransports(['websocket'])
-          .disableAutoConnect() // Para evitar la conexión automática
-          .setExtraHeaders({'Authorization': 'Bearer $token'}) // Token en el encabezado
+          .enableAutoConnect()
+          .setExtraHeaders({'Authorization': 'Bearer $token'})
           .build(),
     );
 
     // Conecta el WebSocket
     socket!.connect();
 
-    // Escucha eventos del WebSocket
     socket!.onConnect((_) {
       print('Conexión exitosa al WebSocket');
     });
 
-    socket!.on('Connexion_Exitosa', (data) {
-      print('Mensaje del servidor: $data');
+    // Escuchar el evento `GlovalWarning`
+    socket!.on('GlovalWarning', (data) {
+      print('Mensaje de GlovalWarning recibido: $data');
+      // Aquí puedes agregar cualquier acción adicional que quieras hacer con el mensaje
     });
 
-    // Manejador de desconexión
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
 
-  // Método para desconectar el WebSocket
+  // Método para enviar el reporte al servidor
+  void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
+    // Enviar el evento `report`
+    socket?.emit('report', reportData);
+
+    // Escuchar el evento `Mensaje_Enviado` y ejecutar el callback con el mensaje
+    socket?.on('Mensaje_Enviado', (data) {
+      onMessageSent(data);
+    });
+  }
+
   void disconnect() {
     socket?.disconnect();
     print('WebSocket desconectado manualmente');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
 class MiPerfilScreen extends StatefulWidget {
@@ -10,12 +11,40 @@ class MiPerfilScreen extends StatefulWidget {
 
 class _MiPerfilScreenState extends State<MiPerfilScreen> {
   bool _isEditing = false;
-  TextEditingController _telefonoController = TextEditingController(text: '3008059938');
-  TextEditingController _direccionController = TextEditingController(text: 'Barrio laureles Calle 43# 71-76');
-  TextEditingController _contactoEmergenciaController = TextEditingController(text: '3152001090');
-  TextEditingController _discapacidadController = TextEditingController(text: 'NA');
-  TextEditingController _medicamentosController = TextEditingController(text: 'NA');
-  TextEditingController _alergiasController = TextEditingController(text: 'NA');
+
+  // Controladores para los campos de texto
+  TextEditingController _telefonoController = TextEditingController();
+  TextEditingController _direccionController = TextEditingController(text: 'Campo sin asignar');
+  TextEditingController _contactoEmergenciaController = TextEditingController(text: 'Campo sin asignar');
+  TextEditingController _discapacidadController = TextEditingController(text: 'Campo sin asignar');
+  TextEditingController _medicamentosController = TextEditingController(text: 'Campo sin asignar');
+  TextEditingController _alergiasController = TextEditingController(text: 'Campo sin asignar');
+
+  // Campos que se llenarán desde SharedPreferences
+  String userRole = "Campo sin asignar";
+  String userId = "Campo sin asignar";
+  String names = "Campo sin asignar";
+  String lastName = "Campo sin asignar";
+  String phone = "Campo sin asignar"; // Valor inicial predeterminado
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Cargar los datos del usuario al iniciar
+  }
+
+  // Cargar los datos almacenados en SharedPreferences
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userRole = prefs.getString('user_role') ?? 'Campo sin asignar';
+      userId = prefs.getString('userid') ?? 'Campo sin asignar';
+      names = prefs.getString('names') ?? 'Campo sin asignar';
+      lastName = prefs.getString('lastNames') ?? 'Campo sin asignar';
+      phone = prefs.getString('phone') ?? 'Campo sin asignar'; // Usar el valor predeterminado si no se encuentra
+      _telefonoController.text = phone; // Inicializar el controlador con el valor del teléfono
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,17 +77,19 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Nombre del usuario',
-                        style: TextStyle(
+                      // Mostrar nombres y apellidos
+                      Text(
+                        '$names $lastName',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 5),
-                      const Text(
-                        'Tipo de usuario',
-                        style: TextStyle(
+                      // Mostrar tipo de usuario (role)
+                      Text(
+                        userRole,
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                         ),
@@ -82,7 +113,7 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(builder: (context) => const LoginScreen()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -108,11 +139,11 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
             ),
             const SizedBox(height: 20),
             buildInfoRow('Tipo de documento', 'Cédula de ciudadanía'),
-            buildInfoRow('Número de documento', '18924038233'),
+            buildInfoRow('Número de documento', 'Campo sin asignar'),
             _isEditing ? buildEditableTextField('Número de teléfono', _telefonoController) : buildInfoRow('Número de teléfono', _telefonoController.text),
             _isEditing ? buildEditableTextField('Dirección residencial', _direccionController) : buildInfoRow('Dirección residencial', _direccionController.text),
             _isEditing ? buildEditableTextField('Contacto de emergencia', _contactoEmergenciaController) : buildInfoRow('Contacto de emergencia', _contactoEmergenciaController.text),
-            buildInfoRow('Fecha de nacimiento', '11/03/2002'),
+            buildInfoRow('Fecha de nacimiento', 'Campo sin asignar'),
             const SizedBox(height: 30),
             const Text(
               'Información médica',
@@ -122,7 +153,7 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            buildInfoRow('Tipo de sangre', 'O+'),
+            buildInfoRow('Tipo de sangre', 'Campo sin asignar'),
             _isEditing ? buildEditableTextField('Alergias', _alergiasController) : buildInfoRow('Alergias', _alergiasController.text),
             _isEditing ? buildEditableTextField('Medicamentos dependientes', _medicamentosController) : buildInfoRow('Medicamentos dependientes', _medicamentosController.text),
             _isEditing ? buildEditableTextField('Discapacidad', _discapacidadController) : buildInfoRow('Discapacidad', _discapacidadController.text),
@@ -133,6 +164,7 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
                   onPressed: () {
                     setState(() {
                       _isEditing = false;
+                      // Guardar cambios (Opcional)
                     });
                   },
                   style: ElevatedButton.styleFrom(
