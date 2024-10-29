@@ -1,9 +1,45 @@
-import 'package:appv2/Constants/constants.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:appv2/Constants/constants.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WebSocketService {
   IO.Socket? socket;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  WebSocketService() {
+    // Configuración inicial de notificaciones
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidSettings);
+
+    flutterLocalNotificationsPlugin.initialize(initSettings);
+
+    // Solicitar permisos de notificación en Android 13+
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    // Usar permission_handler para solicitar permisos de notificación en Android 13+
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
+  }
+
+  // Método para mostrar una notificación
+  Future<void> _showNotification(String title, String message) async {
+    const androidDetails = AndroidNotificationDetails(
+      'gloval_warning_channel', 'Global Warnings',
+      channelDescription: 'Channel for global warnings',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const platformDetails = NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(
+      0, title, message, platformDetails,
+    );
+  }
 
   // Método para conectar el WebSocket
   Future<void> connect() async {
@@ -26,33 +62,30 @@ class WebSocketService {
           .build(),
     );
 
-    // Conecta el WebSocket
     socket!.connect();
 
     socket!.onConnect((_) {
       print('Conexión exitosa al WebSocket');
     });
 
-    // Escuchar el evento `GlovalWarning`
+    // Escuchar el evento `GlovalWarning` y mostrar notificación
     socket!.on('GlovalWarning', (data) {
       print('Mensaje de GlovalWarning recibido: $data');
-      // Aquí puedes agregar cualquier acción adicional que quieras hacer con el mensaje
+      _showNotification("Advertencia Global", data.toString());
     });
 
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
 
-  // Método para enviar el reporte al servidor
+  // Método para enviar un reporte al servidor
   void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
-    // Enviar el evento `report`
     socket?.emit('report', reportData);
-
-    // Escuchar el evento `Mensaje_Enviado` y ejecutar el callback con el mensaje
     socket?.on('Mensaje_Enviado', (data) {
       onMessageSent(data);
     });
   }
 
+  // Método para desconectar el WebSocket manualmente
   void disconnect() {
     socket?.disconnect();
     print('WebSocket desconectado manualmente');
