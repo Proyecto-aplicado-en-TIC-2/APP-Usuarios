@@ -1,3 +1,4 @@
+import 'package:appv2/Registro.dart';
 import 'package:appv2/websocket_service.dart'; // Importa tu servicio de WebSocket
 import 'package:appv2/Brigadistas/BrigaHome.dart';
 import 'package:appv2/Constants/constants.dart';
@@ -6,12 +7,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Asegúrate de importar RegisterScreen aquí
+
+
 import 'APH/aphome.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -73,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
           final String names = responseData['names'];
           final String lastName = responseData['lastNames'];
 
-          // Guarda el token y el rol en SharedPreferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);
           await prefs.setString('user_role', role);
@@ -81,15 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('names', names);
           await prefs.setString('lastNames', lastName);
 
-          // Conecta al WebSocket
           final webSocketService = WebSocketService();
           await webSocketService.connect();
 
-          // Redirige según el rol del usuario
           if (role == 'prehospital_care_accounts') {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) =>  APHHomeScreen()),
+              MaterialPageRoute(builder: (context) => APHHomeScreen()),
             );
           } else {
             Navigator.pushReplacement(
@@ -129,72 +130,91 @@ class _LoginScreenState extends State<LoginScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Image.asset('assets/escudo.png', height: 150),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Inicio de sesión',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
-                          hintText: 'Ingresa tu correo institucional de preferencia',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          hintText: 'Ingresa tu contraseña',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Center(
-                        child: SizedBox(
-                          width: 200,
-                          child: ElevatedButton(
-                            onPressed: () => loginUser(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF8A1F1F),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                            ),
-                            child: const Text(
-                              'Iniciar sesión',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset('assets/escudo.png', height: 150),
+                const SizedBox(height: 20),
+                const Text(
+                  'Inicio de sesión',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    hintText: 'Ingresa tu correo institucional de preferencia',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    hintText: 'Ingresa tu contraseña',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: SizedBox(
+                    width: 200,
+                    child: ElevatedButton(
+                      onPressed: () => loginUser(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8A1F1F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                      ),
+                      child: const Text(
+                        'Iniciar sesión',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      );
+                    },
+                    child: const Text(
+                      '¿No tienes cuenta?',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

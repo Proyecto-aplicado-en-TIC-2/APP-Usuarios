@@ -1,9 +1,12 @@
 import 'package:appv2/Constants/constants.dart';
+import 'package:appv2/main.dart';
+import 'package:appv2/websocket_service.dart';
+import 'package:appv2/Brigadistas/BrigaHome.dart';
+import 'package:appv2/APH/aphome.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -13,22 +16,23 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController(); // Controlador para el número de celular
 
   Future<void> registerUser(BuildContext context) async {
     final String firstName = firstNameController.text.trim();
     final String lastName = lastNameController.text.trim();
     final String email = emailController.text.trim();
     final String password = passwordController.text;
+    final String phone = phoneController.text.trim();
 
     // Validación básica
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
       );
       return;
     }
 
-    // URL de la API
     final Uri url = Uri.parse(APIConstants.registerEndpoint);
 
     try {
@@ -42,38 +46,51 @@ class RegisterScreen extends StatelessWidget {
             'names': firstName,
             'last_names': lastName,
             'mail': email,
+            'phone_number': phone, // Añade el número de celular al cuerpo de la solicitud
             'relationship_with_the_university': 'Student'
           },
         }),
       );
 
       if (response.statusCode == 200) {
-        // Registro exitoso, parseamos la respuesta
         final responseData = jsonDecode(response.body);
 
-        // Almacena el token si el backend lo envía en la respuesta
-        if (responseData['access_token'] != null) {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('access_token', responseData['access_token']);
+        // Almacena datos en SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', responseData['access_token']);
+        await prefs.setString('user_role', responseData['roles']);
+        await prefs.setString('userid', responseData['userid']);
+        await prefs.setString('names', responseData['names']);
+        await prefs.setString('lastNames', responseData['lastNames']);
+
+        // Conecta al WebSocket
+        final webSocketService = WebSocketService();
+        await webSocketService.connect();
+
+        // Redirige a la pantalla correcta según el rol
+        if (responseData['roles'] == 'prehospital_care_accounts') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => APHHomeScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+          );
         }
 
-        // Limpiar controladores después del registro
+        // Limpiar campos después del registro
         firstNameController.clear();
         lastNameController.clear();
         emailController.clear();
         passwordController.clear();
+        phoneController.clear();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registro exitoso')),
         );
-
-        // Redirigir al inicio de sesión en main.dart
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyApp()),
-        );
       } else {
-        // Mostrar mensaje de error en caso de fallo en el registro
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error en el registro: ${response.body}')),
         );
@@ -151,6 +168,21 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'Número de celular',
+                    hintText: 'Ingresa tu número de celular',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 246, 241, 241),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
@@ -190,7 +222,7 @@ class RegisterScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) =>  LoginScreen()),
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
                     style: OutlinedButton.styleFrom(

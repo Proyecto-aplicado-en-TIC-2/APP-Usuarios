@@ -8,5 +8,6 @@ class APIConstants {
   static const String registerEndpoint = '$baseUrl/auth/register/upb-community';
   static const String logInEndpoint = '$baseUrl/auth/login';
   static const String WebSockets_connection = '$baseUrl/WebSocketGateway';
+  static const String Register = '$baseUrl/auth/register/upb-community';
 // Puedes agregar otros endpoints aquí de la misma manera
 }
