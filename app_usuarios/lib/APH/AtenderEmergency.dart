@@ -30,7 +30,7 @@ class APHPrioridadAltaScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Prioridad Alta',
+              'Aleta Datos Extra',
               style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),

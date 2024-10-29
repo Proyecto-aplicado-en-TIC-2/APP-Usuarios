@@ -37,9 +37,6 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
     String? lastNames = prefs.getString('lastNames') ?? '';
     String? role = prefs.getString('user_role') ?? 'Usuario';
 
-    // Agregar logs de depuración para verificar los valores recuperados
-    print('Recuperado de SharedPreferences: names=$names, lastNames=$lastNames, role=$role');
-
     setState(() {
       userName = '$names $lastNames';
       userRole = role;
@@ -70,10 +67,8 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
 
       if (incidentData != null) {
         try {
-          // Intenta decodificar la cadena como JSON
           final incidentMap = jsonDecode(incidentData);
 
-          // Verifica si es un mapa que contiene los campos esperados
           if (incidentMap is Map<String, dynamic> && incidentMap['message'] != null && incidentMap['Lugar'] != null) {
             loadedIncidents.add(incidentMap);
           }
@@ -139,13 +134,28 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
                 itemCount: incidentes.length,
                 itemBuilder: (context, index) {
                   final incident = incidentes[index];
+                  String prioridad = incident['priority'] ?? 'Alta';
+                  Color prioridadColor;
+
+                  // Determina el color de la prioridad
+                  switch (prioridad.toLowerCase()) {
+                    case 'Media':
+                      prioridadColor = Colors.orangeAccent;
+                      break;
+                    case 'Baja':
+                      prioridadColor = Colors.green;
+                      break;
+                    default:
+                      prioridadColor = Colors.red;
+                  }
+
                   return IncidenciaCard(
                     nombre: incident['message'] ?? 'Incidente',
                     ubicacion: incident['Lugar']['block'] ?? '',
                     salon: incident['Lugar']['classroom'].toString(),
                     descripcion: incident['Lugar']['pointOfReference'] ?? '',
-                    prioridad: 'Alta',
-                    prioridadColor: Colors.red,
+                    prioridad: prioridad,
+                    prioridadColor: prioridadColor,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -278,12 +288,14 @@ class IncidenciaCard extends StatelessWidget {
                   children: [
                     Text(
                       nombre,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       'Ubicación: $ubicacion  Salón: $salon',
-                      style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      style: const TextStyle(
+                          fontSize: 16, color: Colors.black87),
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -294,14 +306,16 @@ class IncidenciaCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: prioridadColor.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   prioridad,
-                  style: TextStyle(fontWeight: FontWeight.bold, color: prioridadColor),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: prioridadColor),
                 ),
               ),
               const SizedBox(width: 10),
