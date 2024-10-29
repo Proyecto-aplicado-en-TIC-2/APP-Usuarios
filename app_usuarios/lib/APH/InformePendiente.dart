@@ -1,5 +1,8 @@
+import 'package:appv2/websocket_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../MiPerfil.dart';
+
 
 enum Quadrant {
   Division1, Division2, Division3, Division4, Division5, Division6, Division7
@@ -15,8 +18,8 @@ enum Gender { Male, Female, Otro }
 
 enum EquipmentType {
   APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS, GUANTES_DE_LATEX,
-LANCETA, TIRILLA, MACROGOTERO, SOL_SALINA, TAPABOCA, TORUNDA_DE_ALGODON, VENDA_DE_GASA_4_5YD,
-VENDA_DE_GASA_5_5YD, VENDA_ELASTICA_4_5YD, VENDA_ELASTICA_5_5YD
+  LANCETA, TIRILLA, MACROGOTERO, SOL_SALINA, TAPABOCA, TORUNDA_DE_ALGODON, VENDA_DE_GASA_4_5YD,
+  VENDA_DE_GASA_5_5YD, VENDA_ELASTICA_4_5YD, VENDA_ELASTICA_5_5YD
 }
 
 enum EquipmentSource { Botiquin, Gabinete, TraumaPolideportivo }
@@ -24,6 +27,10 @@ enum EquipmentSource { Botiquin, Gabinete, TraumaPolideportivo }
 enum Cases { Incendio, Medico, Estructural }
 
 class APHInformePendienteScreen extends StatefulWidget {
+  final Map<String, dynamic> report;
+
+  APHInformePendienteScreen({required this.report});
+
   @override
   _APHInformePendienteScreenState createState() => _APHInformePendienteScreenState();
 }
@@ -35,6 +42,120 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
   EquipmentType? selectedEquipmentType;
   EquipmentSource? selectedEquipmentSource;
   Cases? selectedCase;
+
+  // Controladores para campos de texto
+  final TextEditingController classroomController = TextEditingController();
+  final TextEditingController referencePointController = TextEditingController();
+  final TextEditingController consultationReasonController = TextEditingController();
+  final TextEditingController diseaseController = TextEditingController();
+  final TextEditingController physicalExamController = TextEditingController();
+  final TextEditingController sentToController = TextEditingController();
+  final TextEditingController diagnosticImpressionController = TextEditingController();
+  final TextEditingController treatmentController = TextEditingController();
+  final TextEditingController hourArriveController = TextEditingController();
+  final TextEditingController callHourController = TextEditingController();
+  final TextEditingController callAttendntNameController = TextEditingController();
+  final TextEditingController attentionForSecureLineController = TextEditingController();
+  final TextEditingController meansOfAttentionController = TextEditingController();
+  final TextEditingController startedInformationController = TextEditingController();
+  final TextEditingController followUpController = TextEditingController();
+  final TextEditingController noteForFollowUpController = TextEditingController();
+  final TextEditingController quantityController = TextEditingController();
+
+  @override
+  void dispose() {
+    classroomController.dispose();
+    referencePointController.dispose();
+    consultationReasonController.dispose();
+    diseaseController.dispose();
+    physicalExamController.dispose();
+    sentToController.dispose();
+    diagnosticImpressionController.dispose();
+    treatmentController.dispose();
+    hourArriveController.dispose();
+    callHourController.dispose();
+    callAttendntNameController.dispose();
+    attentionForSecureLineController.dispose();
+    meansOfAttentionController.dispose();
+    startedInformationController.dispose();
+    followUpController.dispose();
+    noteForFollowUpController.dispose();
+    quantityController.dispose();
+    super.dispose();
+  }
+
+  // Método para recoger y enviar el cuerpo JSON al WebSocket
+  void _closeReport() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userid');
+    if (userId != null) {
+      // Crear el cuerpo del mensaje JSON
+      Map<String, dynamic> reportData = {
+        "help": {
+          "user_id": userId,
+          "case_id": widget.report['id'],
+          "partition_key": widget.report['partition_key']
+        },
+        "hourArrive": hourArriveController.text,
+        "close_case": "true",
+        "classificationAttention": "",
+
+        // Datos del paciente
+        "patient": {
+          "names": widget.report['reporter']['names'],
+          "lastNames": widget.report['reporter']['lastNames'],
+          "typeDocument": widget.report['reporter']['typeDocument'],
+          "numberOfDocument": widget.report['reporter']['numberOfDocument'],
+          "gender": selectedGender?.toString().split('.').last,
+          "age": widget.report['reporter']['age'],
+          "relationshipWithTheUniversity": widget.report['reporter']['relationshipWithTheUniversity']
+        },
+
+        // Datos de contacto
+        "contact": {
+          "attentionForSecureLine": attentionForSecureLineController.text,
+          "meansOfAttention": meansOfAttentionController.text,
+          "startedInformation": startedInformationController.text
+        },
+
+        // Evaluación
+        "evaluation": {
+          "reasonForConsultation": consultationReasonController.text,
+          "disease": diseaseController.text,
+          "physicalExam": physicalExamController.text,
+          "record": "",
+          "sentTo": sentToController.text,
+          "diagnosticImpression": diagnosticImpressionController.text,
+          "treatment": treatmentController.text,
+          "followUp": followUpController.text
+        },
+
+        // Atendente
+        "attendnt": {
+          "callHour": callHourController.text,
+          "callAttendntName": callAttendntNameController.text
+        },
+
+        // Equipo
+        "equipment": {
+          "quantity": int.tryParse(quantityController.text) ?? 0,
+          "type": selectedEquipmentType?.toString().split('.').last,
+          "source": selectedEquipmentSource?.toString().split('.').last
+        },
+
+        "noteForFollowUp": noteForFollowUpController.text
+      };
+
+      // Enviar el mensaje a través de WebSocket
+      WebSocketService().closeReport(reportData, (String confirmationMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Informe cerrado y enviado con éxito.')),
+        );
+      });
+    } else {
+      print("Información incompleta en SharedPreferences");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +197,12 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
               items: Block.values,
               onChanged: (value) => setState(() => selectedBlock = value),
             ),
-            buildTextField('Salón', ''),
-            buildTextField('Punto de referencia', ''),
-            const SizedBox(height: 30),
-            const Text(
-              'Evaluación',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            buildDropdownField<Gender>(
+              label: 'Género del Paciente',
+              value: selectedGender,
+              items: Gender.values,
+              onChanged: (value) => setState(() => selectedGender = value),
             ),
-            const SizedBox(height: 10),
-            buildTextField('Motivo de consulta', ''),
-            buildTextField('Enfermedad', ''),
-            buildTextField('Examen físico', ''),
-            buildTextField('Enviado a', ''),
-            buildTextField('Impresión diagnóstica', ''),
-            buildTextField('Tratamiento', ''),
-            const SizedBox(height: 10),
             buildDropdownField<EquipmentType>(
               label: 'Tipo de Equipo',
               value: selectedEquipmentType,
@@ -103,34 +215,33 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
               items: EquipmentSource.values,
               onChanged: (value) => setState(() => selectedEquipmentSource = value),
             ),
-            buildDropdownField<Gender>(
-              label: 'Género del Paciente',
-              value: selectedGender,
-              items: Gender.values,
-              onChanged: (value) => setState(() => selectedGender = value),
-            ),
             buildDropdownField<Cases>(
-              label: 'Casos',
+              label: 'Caso',
               value: selectedCase,
               items: Cases.values,
               onChanged: (value) => setState(() => selectedCase = value),
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Checkbox(
-                  value: false,
-                  onChanged: (bool? value) {},
-                ),
-                const Text('Hacer seguimiento'),
-              ],
-            ),
+            buildTextField('Hora de Llegada', 'HH:MM', controller: hourArriveController),
+            buildTextField('Salón', '', controller: classroomController),
+            buildTextField('Punto de referencia', '', controller: referencePointController),
+            buildTextField('Motivo de consulta', '', controller: consultationReasonController),
+            buildTextField('Enfermedad', '', controller: diseaseController),
+            buildTextField('Examen físico', '', controller: physicalExamController),
+            buildTextField('Enviado a', '', controller: sentToController),
+            buildTextField('Impresión diagnóstica', '', controller: diagnosticImpressionController),
+            buildTextField('Tratamiento', '', controller: treatmentController),
+            buildTextField('Seguimiento', '', controller: followUpController),
+            buildTextField('Hora de Llamada', 'HH:MM:SS', controller: callHourController),
+            buildTextField('Nombre del Atendente', '', controller: callAttendntNameController),
+            buildTextField('Atención por Línea Segura', '', controller: attentionForSecureLineController),
+            buildTextField('Medios de Atención', '', controller: meansOfAttentionController),
+            buildTextField('Información de Inicio', '', controller: startedInformationController),
+            buildTextField('Cantidad de Equipo', '', controller: quantityController),
+            buildTextField('Nota de Seguimiento', '', controller: noteForFollowUpController),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: _closeReport,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 134, 97, 83),
                   shape: RoundedRectangleBorder(
@@ -139,7 +250,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 ),
                 child: const Text(
-                  'Guardar cambios',
+                  'Cerrar Reporte',
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
@@ -150,7 +261,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
     );
   }
 
-  Widget buildTextField(String label, String placeholder, {int maxLines = 1, bool isReadOnly = false}) {
+  Widget buildTextField(String label, String placeholder, {int maxLines = 1, bool isReadOnly = false, TextEditingController? controller}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -162,6 +273,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           ),
           const SizedBox(height: 10),
           TextFormField(
+            controller: controller,
             maxLines: maxLines,
             readOnly: isReadOnly,
             decoration: InputDecoration(

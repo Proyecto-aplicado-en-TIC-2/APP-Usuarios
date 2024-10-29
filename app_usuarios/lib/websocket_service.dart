@@ -92,6 +92,13 @@ class WebSocketService {
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
 
+  void closeReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
+    socket?.emit('APH', reportData);
+    socket?.on('Mensaje_Enviado', (data) {
+      onMessageSent(data.toString());
+    });
+  }
+
   void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('report', reportData);
     socket?.on('Mensaje_Enviado', (data) {

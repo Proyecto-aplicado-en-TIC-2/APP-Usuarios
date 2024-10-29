@@ -109,7 +109,8 @@ class InformesScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => APHInformePendienteScreen()),
+                              builder: (context) => APHInformePendienteScreen(report: report),
+                            ),
                           );
                         },
                       );
