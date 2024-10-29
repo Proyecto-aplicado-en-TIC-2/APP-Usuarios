@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'APH/aphome.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -71,7 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
           final String names = responseData['names'];
           final String lastName = responseData['lastNames'];
 
-
           // Guarda el token y el rol en SharedPreferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);
@@ -80,16 +81,22 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('names', names);
           await prefs.setString('lastNames', lastName);
 
-
           // Conecta al WebSocket
           final webSocketService = WebSocketService();
           await webSocketService.connect();
 
-          // Navega a la pantalla de inicio
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
-          );
+          // Redirige según el rol del usuario
+          if (role == 'prehospital_care_accounts') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>  APHHomeScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Error en la operación de inicio de sesión')),

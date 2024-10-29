@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../MiPerfil.dart';
 
 class APHPrioridadAltaScreen extends StatelessWidget {
+  final Map<String, dynamic> incidentData;
+
+  APHPrioridadAltaScreen({required this.incidentData});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,9 +16,9 @@ class APHPrioridadAltaScreen extends StatelessWidget {
             icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
-                );
+                context,
+                MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
+              );
             },
           ),
         ],
@@ -27,59 +31,39 @@ class APHPrioridadAltaScreen extends StatelessWidget {
           children: [
             const Text(
               'Prioridad Alta',
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
+
+            // Sección de Información del Reportante
             const Text(
-              'Jaider Joham Morales Franco',
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
-            const Text(
-              'Estudiante',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Información personal',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              'Reportante',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            buildInfoRow('Nombre completo', 'Jaider Joham Morales Franco'),
-            buildInfoRow('Id UPB', '3008059938'),
-            buildInfoRow('Contacto de emergencia', '3152001090'),
-            buildInfoRow('Bloque o punto de referencia', 'Bloque 9'),
-            buildInfoRow('Salón', '203'),
-            buildInfoRow('Descripción del incidente', 'Me Corté'),
+            buildInfoRow('Nombres', incidentData['Reporter']['names'] ?? 'N/A'),
+            buildInfoRow('Apellidos', incidentData['Reporter']['lastNames'] ?? 'N/A'),
+            buildInfoRow('Relación con la universidad', incidentData['Reporter']['relationshipWithTheUniversity'] ?? 'N/A'),
+
             const SizedBox(height: 30),
+
+            // Sección de Lugar del Incidente
             const Text(
-              'Información médica',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              'Lugar del Incidente',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            buildInfoRow('Medicamentos dependientes', 'NA'),
-            buildInfoRow('Alergias', 'NA'),
-            buildInfoRow('Discapacidad', 'NA'),
+            buildInfoRow('Bloque', incidentData['Lugar']['block'] ?? 'N/A'),
+            buildInfoRow('Salón', incidentData['Lugar']['classroom'].toString()),
+            buildInfoRow('Punto de referencia', incidentData['Lugar']['pointOfReference'] ?? 'N/A'),
+
             const SizedBox(height: 30),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
@@ -93,8 +77,7 @@ class APHPrioridadAltaScreen extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
@@ -123,13 +106,9 @@ class APHPrioridadAltaScreen extends StatelessWidget {
         children: [
           Text(
             '$title: ',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );

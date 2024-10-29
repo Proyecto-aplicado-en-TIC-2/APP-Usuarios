@@ -1,14 +1,22 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:appv2/Constants/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:convert';
 
 class WebSocketService {
   IO.Socket? socket;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  WebSocketService() {
+  // ValueNotifier para notificar cambios
+  static final ValueNotifier<bool> newIncidentNotifier = ValueNotifier(false);
+
+  // Singleton
+  static final WebSocketService _instance = WebSocketService._internal();
+  factory WebSocketService() => _instance;
+  WebSocketService._internal() {
     // Configuración inicial de notificaciones
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
@@ -17,16 +25,15 @@ class WebSocketService {
 
     // Solicitar permisos de notificación en Android 13+
     _requestNotificationPermission();
+    connect(); // Conectar automáticamente
   }
 
   Future<void> _requestNotificationPermission() async {
-    // Usar permission_handler para solicitar permisos de notificación en Android 13+
     if (await Permission.notification.isDenied) {
       await Permission.notification.request();
     }
   }
 
-  // Método para mostrar una notificación
   Future<void> _showNotification(String title, String message) async {
     const androidDetails = AndroidNotificationDetails(
       'gloval_warning_channel', 'Global Warnings',
@@ -41,7 +48,6 @@ class WebSocketService {
     );
   }
 
-  // Método para conectar el WebSocket
   Future<void> connect() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwt_token');
@@ -52,7 +58,6 @@ class WebSocketService {
       return;
     }
 
-    // Configura y conecta el WebSocket
     socket = IO.io(
       APIConstants.WebSockets_connection,
       IO.OptionBuilder()
@@ -68,16 +73,26 @@ class WebSocketService {
       print('Conexión exitosa al WebSocket');
     });
 
-    // Escuchar el evento `GlovalWarning` y mostrar notificación
-    socket!.on('GlovalWarning', (data) {
-      print('Mensaje de GlovalWarning recibido: $data');
-      _showNotification("Advertencia Global", data.toString());
+    // Escuchar el evento `APH_case`, mostrar notificación y almacenar datos en SharedPreferences
+    socket!.on('APH_case', (data) async {
+      print('Mensaje de APH_case recibido: $data');
+      _showNotification("Caso APH", data.toString());
+
+      // Guardar el caso en SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String caseId = data['Id_reporte'];
+      final String caseDataJson = jsonEncode(data);
+
+      await prefs.setString(caseId, caseDataJson);
+      print('Datos guardados para el ID de reporte: $caseId');
+
+      // Notificar cambio
+      newIncidentNotifier.value = !newIncidentNotifier.value;
     });
 
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
 
-  // Método para enviar un reporte al servidor
   void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('report', reportData);
     socket?.on('Mensaje_Enviado', (data) {
@@ -85,7 +100,6 @@ class WebSocketService {
     });
   }
 
-  // Método para desconectar el WebSocket manualmente
   void disconnect() {
     socket?.disconnect();
     print('WebSocket desconectado manualmente');
