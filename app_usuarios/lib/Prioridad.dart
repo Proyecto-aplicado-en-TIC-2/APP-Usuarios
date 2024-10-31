@@ -1,3 +1,6 @@
+import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/EmergencyCard.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'MiPerfil.dart';
 import 'UbicacionAltaPrioridad.dart';
@@ -8,167 +11,91 @@ class PrioridadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                builder: (context) => MiPerfilScreen(), 
-                ),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView( 
-        padding: const EdgeInsets.all(20.0),
+      backgroundColor: basilTheme?.surface,
+      appBar: CustonAppbar(automaticallyImplyLeading: true),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Selecciona el tipo de emergencia',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5), // Padding de 5 a los lados
+              child: Text(
+                'Selecciona el tipo de emergencia',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineLarge
+                    ?.copyWith(color: basilTheme?.onSurface),
               ),
             ),
             const SizedBox(height: 20),
             EmergencyCard(
-              color: Colors.brown,
+              color: basilTheme!.primary,
               title: 'Alta prioridad',
               description:
-                  'Requiere intervención inmediata. Ejemplos: pérdida de conciencia, dificultad para respirar, sangrado abundante.',
+              'Requiere intervención inmediata. Ejemplos: pérdida de conciencia, dificultad para respirar, sangrado abundante.',
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UbicacionAltaprioridadScreen(), 
-                ),
-              );
+                    builder: (context) => UbicacionMediaprioridadScreen(),
+                  ),
+                );
               },
+              textColor: const Color(0xffffffff),
             ),
             const SizedBox(height: 10),
             EmergencyCard(
-              color: Colors.pink[200]!,
+              color: basilTheme.primaryContainer,
               title: 'Media prioridad',
               description:
-                  'Situaciones serias pero no críticas. Ejemplos: fracturas, heridas profundas, dolor intenso persistente.',
+              'Situaciones serias pero no críticas. Ejemplos: fracturas, heridas profundas, dolor intenso persistente.',
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UbicacionMediaprioridadScreen(), 
-                ),
-              );
+                    builder: (context) => UbicacionMediaprioridadScreen(),
+                  ),
+                );
               },
+              textColor: basilTheme.onSurface,
             ),
             const SizedBox(height: 10),
             EmergencyCard(
-              color: Colors.pink[100]!,
+              color: basilTheme.primaryContainer,
               title: 'Baja prioridad',
               description:
-                  'Emergencias menores que no requieren atención inmediata. Ejemplos: cortes leves, mareos, molestias menores.',
+              'Emergencias menores que no requieren atención inmediata. Ejemplos: cortes leves, mareos, molestias menores.',
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UbicacionMediaprioridadScreen(), 
-                ),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UbicacionMediaprioridadScreen(),
+                  ),
+                );
               },
+              textColor: basilTheme.onSurface,
             ),
-            const SizedBox(height: 30),
-            const Text(
-              'Importante',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5), // Padding de 5 a los lados
+              child: Text(
+                'Importante',
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: basilTheme?.onSurface),
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Durante este proceso, tu dispositivo enviará tu ubicación en tiempo real para facilitar la llegada del personal de APH y brindarte asistencia lo más rápido posible.',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class EmergencyCard extends StatelessWidget {
-  final Color color;
-  final String title;
-  final String description;
-  final VoidCallback onTap;
-
-  const EmergencyCard({super.key, 
-    required this.color,
-    required this.title,
-    required this.description,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap, 
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 5),
+              child:   Text(
+                'Durante este proceso, tu dispositivo enviará tu ubicación en tiempo real para facilitar la llegada del personal de APH y brindarte asistencia lo más rápido posible.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            ),
           ],
         ),
       ),
     );
   }
 }
-
-

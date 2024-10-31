@@ -1,29 +1,15 @@
+import 'package:appv2/APH/Informes.dart';
 import 'package:appv2/websocket_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../MiPerfil.dart';
 
-
-enum Quadrant {
-  Division1, Division2, Division3, Division4, Division5, Division6, Division7
-}
-
-enum Block {
-  Block1, Block2, Block3, Block4, Block5, Block6, Block7, Block8, Block9, Block10, Block12, Block13,
-  Block14, Block15, Block16, Block17, Block18, Block19, Block20, Block21, Block22, Block23, Block24,
-  ComplejoDeIngenierias, Forum, BloquesExternosAlCampus
-}
-
+enum Quadrant { Division1, Division2, Division3, Division4, Division5, Division6, Division7 }
+enum Block { Block1, Block2, Block3, Block4, Block5, Block6, Block7, Block8, Block9, Block10, Block12, Block13, Block14, Block15, Block16, Block17, Block18, Block19, Block20, Block21, Block22, Block23, Block24, ComplejoDeIngenierias, Forum, BloquesExternosAlCampus }
 enum Gender { Male, Female, Otro }
-
-enum EquipmentType {
-  APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS, GUANTES_DE_LATEX,
-  LANCETA, TIRILLA, MACROGOTERO, SOL_SALINA, TAPABOCA, TORUNDA_DE_ALGODON, VENDA_DE_GASA_4_5YD,
-  VENDA_DE_GASA_5_5YD, VENDA_ELASTICA_4_5YD, VENDA_ELASTICA_5_5YD
-}
-
+enum EquipmentType { APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS, GUANTES_DE_LATEX, LANCETA, TIRILLA, MACROGOTERO, SOL_SALINA, TAPABOCA, TORUNDA_DE_ALGODON, VENDA_DE_GASA_4_5YD, VENDA_DE_GASA_5_5YD, VENDA_ELASTICA_4_5YD, VENDA_ELASTICA_5_5YD }
 enum EquipmentSource { Botiquin, Gabinete, TraumaPolideportivo }
-
 enum Cases { Incendio, Medico, Estructural }
 
 class APHInformePendienteScreen extends StatefulWidget {
@@ -43,7 +29,6 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
   EquipmentSource? selectedEquipmentSource;
   Cases? selectedCase;
 
-  // Controladores para campos de texto
   final TextEditingController classroomController = TextEditingController();
   final TextEditingController referencePointController = TextEditingController();
   final TextEditingController consultationReasonController = TextEditingController();
@@ -84,12 +69,10 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
     super.dispose();
   }
 
-  // Método para recoger y enviar el cuerpo JSON al WebSocket
   void _closeReport() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userid');
     if (userId != null) {
-      // Crear el cuerpo del mensaje JSON
       Map<String, dynamic> reportData = {
         "help": {
           "user_id": userId,
@@ -99,8 +82,6 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
         "hourArrive": hourArriveController.text,
         "close_case": "true",
         "classificationAttention": "",
-
-        // Datos del paciente
         "patient": {
           "names": widget.report['reporter']['names'],
           "lastNames": widget.report['reporter']['lastNames'],
@@ -110,15 +91,11 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           "age": widget.report['reporter']['age'],
           "relationshipWithTheUniversity": widget.report['reporter']['relationshipWithTheUniversity']
         },
-
-        // Datos de contacto
         "contact": {
           "attentionForSecureLine": attentionForSecureLineController.text,
           "meansOfAttention": meansOfAttentionController.text,
           "startedInformation": startedInformationController.text
         },
-
-        // Evaluación
         "evaluation": {
           "reasonForConsultation": consultationReasonController.text,
           "disease": diseaseController.text,
@@ -129,31 +106,36 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           "treatment": treatmentController.text,
           "followUp": followUpController.text
         },
-
-        // Atendente
         "attendnt": {
           "callHour": callHourController.text,
           "callAttendntName": callAttendntNameController.text
         },
-
-        // Equipo
         "equipment": {
           "quantity": int.tryParse(quantityController.text) ?? 0,
           "type": selectedEquipmentType?.toString().split('.').last,
           "source": selectedEquipmentSource?.toString().split('.').last
         },
-
         "noteForFollowUp": noteForFollowUpController.text
       };
 
-      // Enviar el mensaje a través de WebSocket
       WebSocketService().closeReport(reportData, (String confirmationMessage) {
+        // Muestra el SnackBar antes de redirigir a InformesScreen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Informe cerrado y enviado con éxito.')),
         );
+
+        // Redirige a InformesScreen después de un breve retraso
+        Future.delayed(Duration(milliseconds: 500), () {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => InformesScreen()),
+                (Route<dynamic> route) => false,
+          );
+        });
       });
     } else {
-      print("Información incompleta en SharedPreferences");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No se encontró el ID de usuario. Intente nuevamente.")),
+      );
     }
   }
 

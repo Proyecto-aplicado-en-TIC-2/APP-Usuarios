@@ -5,23 +5,22 @@ class Button extends StatelessWidget {
   final String text;
   final double width;
   final VoidCallback onClick;
-  final BasilTheme? basilTheme;
 
   const Button({
     Key? key,
     required this.text,
     required this.width,
     required this.onClick,
-    required this.basilTheme,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Center(
       child: SizedBox(
         width: width,
         height: 40,
-        child: ElevatedButton(
+        child: FilledButton(
           onPressed: onClick,
           style: ElevatedButton.styleFrom(
             backgroundColor: basilTheme?.primary,

@@ -1,3 +1,7 @@
+import 'package:appv2/Components/Box.dart';
+import 'package:appv2/Components/Button.dart';
+import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/Constants/theme.dart';
 import 'package:appv2/Registro.dart';
 import 'package:appv2/websocket_service.dart'; // Importa tu servicio de WebSocket
 import 'package:appv2/Brigadistas/BrigaHome.dart';
@@ -11,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'APH/aphome.dart';
+import 'Components/BoxIsPassword.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -18,12 +23,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const basilTheme = BasilTheme();
+
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      title: 'Basil',
+      theme: basilTheme.toThemeData(), // Aplica BasilTheme como tema principal
       home: const LoginScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -119,12 +129,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+
+    @override
+    Widget build(BuildContext context) {
+      final basilTheme = Theme.of(context).extension<BasilTheme>();
+
+      return Scaffold(
+      backgroundColor:  basilTheme?.surface,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: SingleChildScrollView(
             child: isLoading
@@ -133,68 +146,51 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Image.asset('assets/escudo.png', height: 150),
-                const SizedBox(height: 20),
-                const Text(
+                Image.asset(
+                  'assets/Logo_UPB.png',
+                    height: 144,
+                    width: 144
+                  ),
+
+                const SizedBox(height: 30),
+
+                Text(
                   'Inicio de sesión',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface)
                 ),
-                const SizedBox(height: 20),
-                TextField(
+
+                const SizedBox(height: 30),
+                Box(
+                  topLabel: 'Correo',
+                  bottomHelperText: 'Ingresa tu correo institucional de preferencia',
                   controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Correo electrónico',
-                    hintText: 'Ingresa tu correo institucional de preferencia',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
+                  inputType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 10),
+                Boxispassword(
+                    topLabel: 'Contraseña',
+                    bottomHelperText: 'Ingresa tu contraseña',
+                    controller: passwordController,
+                    inputType: TextInputType.visiblePassword,
+                    isPassword: true,),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerRight,
+                    child: Text(
+                    'Olvide mi contraseña!',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.primary),
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    hintText: 'Ingresa tu contraseña',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                  ),
+                const SizedBox(height: 10),
+
+                Button(
+                  text: 'Iniciar sesión',
+                  width: 133,
+                  onClick: () => loginUser(context),
                 ),
-                const SizedBox(height: 16),
-                Center(
-                  child: SizedBox(
-                    width: 200,
-                    child: ElevatedButton(
-                      onPressed: () => loginUser(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8A1F1F),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                      ),
-                      child: const Text(
-                        'Iniciar sesión',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 20),
+
                 Center(
                   child: TextButton(
                     onPressed: () {
@@ -203,12 +199,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => RegisterScreen()),
                       );
                     },
-                    child: const Text(
-                      '¿No tienes cuenta?',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
+                    child: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                        children: [
+                          TextSpan(text: '¿No tienes cuenta? '),
+                          TextSpan(
+                            text: 'Regístrate !',
+                            style: TextStyle(color: basilTheme?.primary), // Cambia solo "Regístrate !" a otro color
+                          ),
+                        ],
                       ),
                     ),
                   ),

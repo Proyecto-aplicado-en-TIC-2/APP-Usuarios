@@ -1,3 +1,8 @@
+import 'package:appv2/Components/Box.dart';
+import 'package:appv2/Components/BoxIsPassword.dart';
+import 'package:appv2/Components/Button.dart';
+import 'package:appv2/Components/CustonOutlinedButton.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/main.dart';
 import 'package:appv2/websocket_service.dart';
@@ -104,139 +109,57 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: basilTheme?.surface,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Image.asset('assets/escudo.png', height: 150),
-                const SizedBox(height: 20),
-                const Text(
-                  'Regístrate ahora!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
+                Image.asset('assets/Logo_UPB.png', height: 150),
+                const SizedBox(height: 30),
+                Text(
+                  'Regístrese',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface)
                 ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: firstNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombres',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 246, 241, 241),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: lastNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Apellidos',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 246, 241, 241),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Correo institucional',
-                    hintText: 'Ingresa tu correo institucional de preferencia',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 246, 241, 241),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: 'Número de celular',
-                    hintText: 'Ingresa tu número de celular',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 246, 241, 241),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    hintText: 'Ingresa tu contraseña',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 246, 241, 241),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: SizedBox(
-                    width: 150,
-                    child: ElevatedButton(
-                      onPressed: () => registerUser(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8A1F1F),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                      ),
-                      child: const Text(
-                        'Registrarme',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF8A1F1F)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-                    ),
-                    child: const Text(
-                      'Volver al inicio de sesión',
-                      style: TextStyle(color: Color(0xFF8A1F1F)),
-                    ),
-                  ),
+                const SizedBox(height: 30),
+                Box(topLabel: 'Nombres',
+                    bottomHelperText: '',
+                  inputType: TextInputType.name,
+                  controller: firstNameController,),
+                Box(topLabel: 'Apellidos',
+                    bottomHelperText: '',
+                    controller: lastNameController,
+                  inputType: TextInputType.name,),
+                Box(topLabel: 'Correo institucional',
+                    bottomHelperText: 'Ingresa tu correo institucional de preferencia',
+                    controller: emailController,
+                  inputType: TextInputType.emailAddress,),
+                Box(topLabel: 'Número de celular',
+                    bottomHelperText: 'Ingresa tu número de celular',
+                    controller: phoneController,
+                  inputType: TextInputType.phone,),
+                Boxispassword(topLabel: 'Contraseña',
+                    bottomHelperText: 'Ingresa tu contraseña',
+                    controller: passwordController,
+                    inputType: TextInputType.visiblePassword,
+                    isPassword: true,),
+              const SizedBox(height: 10),
+              Button(
+                  text: 'Registrarme',
+                  width: 133,
+                  onClick: () => registerUser(context),),
+                const SizedBox(height: 30),
+                CustonOutlinedButton(
+                  text: 'Volver',
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                  width: 206,
                 ),
               ],
             ),

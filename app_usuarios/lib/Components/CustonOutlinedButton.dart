@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../Constants/AppColors.dart';
 
-class CustomOutlinedButton extends StatelessWidget {
+class CustonOutlinedButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  final BasilTheme? basilTheme;
   final double width; // Ancho opcional
 
-  const CustomOutlinedButton({
+  const CustonOutlinedButton({
     Key? key,
     required this.text,
     required this.onPressed,
-    required this.basilTheme,
     required this.width,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Center(
       child: SizedBox(
         width: width, // Aplica el ancho

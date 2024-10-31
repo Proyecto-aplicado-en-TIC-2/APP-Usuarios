@@ -1,3 +1,8 @@
+import 'package:appv2/Components/Box.dart';
+import 'package:appv2/Components/Button.dart';
+import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/CustonOutlinedButton.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/MiPerfil.dart';
 import 'package:appv2/websocket_service.dart';
 import 'package:appv2/Brigadistas/BrigaHome.dart'; // Asegúrate de importar la pantalla de destino
@@ -59,139 +64,63 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MiPerfilScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.white,
-      ),
+      appBar: const CustonAppbar(automaticallyImplyLeading: true),
+
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '¿Dónde estás ubicado?',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 30),
+            Card(
+              color: basilTheme?.primaryContainer,
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-            const SizedBox(height: 20),
-            Material(
-              elevation: 5,
-              borderRadius: BorderRadius.circular(15),
-              child: Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Colors.pink[50],
-                  borderRadius: BorderRadius.circular(15),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.all(20), // Ajusta el padding como desees
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Bloque o referencia en la que estás ubicado',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
+                    Box(
+                      topLabel: 'Bloque o referencia en la que estás ubicado',
+                      bottomHelperText: 'Ejemplos: Bloque 2, Biblioteca, Cafetería, etc.',
                       controller: blockController,
-                      decoration: InputDecoration(
-                        hintText: 'Ejemplos: Bloque 2, Biblioteca, Cafetería, Gimnasio y etc.',
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Número de aula',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      inputType: TextInputType.text,
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
+                    Box(
+                      topLabel: 'Número de aula',
+                      bottomHelperText: 'Puedes dejarlo en blanco',
                       controller: classroomController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: 'Puedes dejarlo en blanco',
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                      inputType: TextInputType.number,
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      '¿Describe lo que te está pasando?',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
+                    const SizedBox(height: 30),
+                    Box(
+                      topLabel: '¿Describe lo que te está pasando?',
+                      bottomHelperText: 'Descripción breve',
                       controller: pointOfReferenceController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: 'Descripción breve',
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                      inputType: TextInputType.text,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
+                        CustonOutlinedButton(
+                          text: 'Cancelar',
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xffffffff),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          ),
-                          child: const Text(
-                            'Cancelar',
-                            style: TextStyle(color: Colors.black),
-                          ),
+                          width: 105,
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            sendReport(context); // Llama a sendReport con el contexto
+                        Button(
+                          text: 'Enviar',
+                          width: 88,
+                          onClick: () {
+                            sendReport(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF8A1F1F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          ),
-                          child: const Text(
-                            'Enviar',
-                            style: TextStyle(color: Colors.white),
-                          ),
                         ),
                       ],
                     ),
