@@ -73,6 +73,12 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(padding:  const EdgeInsets.all(5),
+              child: Text(
+                '¿Donde estas ubicado?',
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: basilTheme?.onSurface),
+              ),
+            ),
             const SizedBox(height: 30),
             Card(
               color: basilTheme?.primaryContainer,
@@ -90,7 +96,7 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
                       controller: blockController,
                       inputType: TextInputType.text,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 30),
                     Box(
                       topLabel: 'Número de aula',
                       bottomHelperText: 'Puedes dejarlo en blanco',
@@ -128,6 +134,24 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
                 ),
               ),
             ),
+            Padding(padding:  const EdgeInsets.all(5),
+            child: Container(
+              alignment: Alignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 30),
+                  Text( 'Recomendación',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  const SizedBox(height: 10),
+                  Text( 'Puedes asistir a una de las estaciones que están ubicadas en la universidad, para bridarte ayuda',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                ],
+              ),
+            ),
+            )
           ],
         ),
       ),
