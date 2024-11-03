@@ -22,7 +22,11 @@ class CardNeedHelp extends StatelessWidget {
         color: basilTheme!.primary,
         elevation: 3, // Elevación light/3 de Material Design 3
         shadowColor: basilTheme.surfaceContainer, // Color de la sombra
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: InkWell(
+
           splashColor: basilTheme.surfaceContainer,
           onTap: () {
             Navigator.push(

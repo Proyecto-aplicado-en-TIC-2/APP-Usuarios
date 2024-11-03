@@ -16,8 +16,7 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
-    return Center(
-      child: SizedBox(
+       return SizedBox(
         width: width,
         height: 40,
         child: FilledButton(
@@ -33,7 +32,6 @@ class Button extends StatelessWidget {
             style: const TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
-      ),
     );
   }
 }

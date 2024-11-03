@@ -1,3 +1,7 @@
+import 'package:appv2/Components/Button.dart';
+import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/CustonOutlinedButton.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
@@ -35,8 +39,8 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
 
   // Cargar los datos almacenados en SharedPreferences
   Future<void> _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
       userRole = prefs.getString('user_role') ?? 'Campo sin asignar';
       userId = prefs.getString('userid') ?? 'Campo sin asignar';
       names = prefs.getString('names') ?? 'Campo sin asignar';
@@ -48,21 +52,18 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UPB Segura'),
-        backgroundColor: Colors.white,
-      ),
+      appBar: const CustonAppbar(automaticallyImplyLeading: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Información personal',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+            Padding(padding: const EdgeInsets.all(10.0),
+              child: Text(
+                'Mi perfil',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface),
               ),
             ),
             const SizedBox(height: 20),
@@ -77,160 +78,127 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Mostrar nombres y apellidos
                       Text(
-                        '$names $lastName',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        names,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: basilTheme?.onSurface),
                       ),
                       const SizedBox(height: 5),
-                      // Mostrar tipo de usuario (role)
                       Text(
                         userRole,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _isEditing = !_isEditing;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(_isEditing ? 'Cancelar' : 'Editar perfil', style: const TextStyle(color: Colors.black)),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 134, 97, 83),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
-            const Text(
-              'Información personal',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            buildInfoRow('Tipo de documento', 'Cédula de ciudadanía'),
-            buildInfoRow('Número de documento', 'Campo sin asignar'),
-            _isEditing ? buildEditableTextField('Número de teléfono', _telefonoController) : buildInfoRow('Número de teléfono', _telefonoController.text),
-            _isEditing ? buildEditableTextField('Dirección residencial', _direccionController) : buildInfoRow('Dirección residencial', _direccionController.text),
-            _isEditing ? buildEditableTextField('Contacto de emergencia', _contactoEmergenciaController) : buildInfoRow('Contacto de emergencia', _contactoEmergenciaController.text),
-            buildInfoRow('Fecha de nacimiento', 'Campo sin asignar'),
-            const SizedBox(height: 30),
-            const Text(
-              'Información médica',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            buildInfoRow('Tipo de sangre', 'Campo sin asignar'),
-            _isEditing ? buildEditableTextField('Alergias', _alergiasController) : buildInfoRow('Alergias', _alergiasController.text),
-            _isEditing ? buildEditableTextField('Medicamentos dependientes', _medicamentosController) : buildInfoRow('Medicamentos dependientes', _medicamentosController.text),
-            _isEditing ? buildEditableTextField('Discapacidad', _discapacidadController) : buildInfoRow('Discapacidad', _discapacidadController.text),
-            if (_isEditing) ...[
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = false;
-                      // Guardar cambios (Opcional)
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 134, 97, 83),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  ),
-                  child: const Text(
-                    'Guardar cambios',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Button(text: 'Editar perfil',
+                    width: 122,
+                    onClick: ArgumentError.notNull
                 ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildInfoRow(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$title: ',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+               CustonOutlinedButton(text: 'Cerrar sesión',
+                    onPressed:  () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    width: 122)
+              ],
             ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildEditableTextField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              fillColor: const Color.fromARGB(255, 252, 228, 236),
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 30,),
+           Container(
+             padding: const EdgeInsets.all(10.0),
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 Text('Información personal',
+                   style:  Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Tipo de documentó',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('Cedula de ciudadanía',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Numero de documentó',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('18924038233',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Numero de teléfono',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('3008059938',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Dirección residencial',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('Barrio laureles Calle 43# 71-76',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Contacto de emergencia',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('3152001090',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Fecha de nacimiento ',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('11/03/2002',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 30),
+                 Text('Información medica ',
+                   style:  Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Tipo de sangre',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('O+',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Alergias',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('NA',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Medicamentos dependientes',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('NA',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 const SizedBox(height: 10),
+                 Text('Discapacidad',
+                   style:  Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+                 Text('NA',
+                   style:  Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
+                 ),
+               ],
+             )
+           )
+        ]
+      )
+    )
     );
   }
 }

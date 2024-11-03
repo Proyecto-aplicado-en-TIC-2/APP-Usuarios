@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+              MaterialPageRoute(builder: (context) =>  BrigaHomescreen()),
             );
           }
         } else {
@@ -182,15 +182,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                Button(
-                  text: 'Iniciar sesión',
-                  width: 133,
-                  onClick: () => loginUser(context),
+                Center(
+                 child:  Button(
+                    text: 'Iniciar sesión',
+                    width: 133,
+                    onClick: () => loginUser(context),
+                  ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Center(
                   child: TextButton(
                     onPressed: () {
@@ -199,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => RegisterScreen()),
                       );
                     },
-                    child: RichText(
+                      child: RichText(
                       text: TextSpan(
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: basilTheme?.onSurface),
                         children: [

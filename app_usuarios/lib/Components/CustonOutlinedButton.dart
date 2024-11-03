@@ -17,8 +17,7 @@ class CustonOutlinedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
-    return Center(
-      child: SizedBox(
+      return SizedBox(
         width: width, // Aplica el ancho
         height: 40, // Aplica la altura
         child: OutlinedButton(
@@ -35,7 +34,6 @@ class CustonOutlinedButton extends StatelessWidget {
               style: TextStyle(color: basilTheme?.primary)
           ),
         ),
-      ),
     );
   }
 }

@@ -81,7 +81,7 @@ class RegisterScreen extends StatelessWidget {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+            MaterialPageRoute(builder: (context) =>  BrigaHomescreen()),
           );
         }
 
@@ -149,17 +149,21 @@ class RegisterScreen extends StatelessWidget {
                     inputType: TextInputType.visiblePassword,
                     isPassword: true,),
               const SizedBox(height: 10),
-              Button(
+              Center(
+                child: Button(
                   text: 'Registrarme',
                   width: 133,
                   onClick: () => registerUser(context),),
+              ),
                 const SizedBox(height: 30),
-                CustonOutlinedButton(
-                  text: 'Volver',
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-                  },
-                  width: 206,
+                Center(
+                  child: CustonOutlinedButton(
+                    text: 'Volver',
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                    },
+                    width: 206,
+                  ),
                 ),
               ],
             ),

@@ -29,7 +29,6 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
 
   @override
   void dispose() {
-    _webSocketService.disconnect();
     blockController.dispose();
     classroomController.dispose();
     pointOfReferenceController.dispose();
@@ -54,10 +53,10 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
           SnackBar(content: Text(serverResponse))
       );
 
-      // Redirige a la pantalla BrigaHomescreen después de enviar el informe
-      Navigator.pushReplacement(
-        context,
+      // Usa Navigator para limpiar la pila y redirigir a BrigaHomescreen
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+            (Route<dynamic> route) => false,
       );
     });
   }

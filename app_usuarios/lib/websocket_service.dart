@@ -89,21 +89,55 @@ class WebSocketService {
       _showNotification("Alerta Global", data.toString());
     });
 
+    socket!.on('Report_assign', (data) async {
+      print('Report_assign: $data');
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('APH_name', data['APH_name']);
+      await prefs.setString('APH_phone', data['APH_phone']);
+      await prefs.setString('APH_time', data['APH_time']);
+      await prefs.setBool('APH_ok', true);
+      newIncidentNotifier.value = !newIncidentNotifier.value;
+      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
+    });
+
+    socket!.on('on_the_way', (data) async {
+      print('on_the_way: $data');
+      if(data  == true ){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('on_the_way', true);
+      }
+      newIncidentNotifier.value = !newIncidentNotifier.value;
+      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
+    });
+
+    socket!.on('Close_incident_broadcast', (data) async {
+      print('Close_incident_broadcast: $data');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('Close_incident_broadcast', data['Message']);
+      newIncidentNotifier.value = !newIncidentNotifier.value;
+      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
+    });
+
+
+
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
 
   void closeReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('APH', reportData);
-    socket?.on('Mensaje_Enviado', (data) {
-      onMessageSent(data.toString());
-    });
+    newIncidentNotifier.value = !newIncidentNotifier.value;
   }
 
   void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('report', reportData);
-    socket?.on('Mensaje_Enviado', (data) {
+    socket?.on('Mensaje_Enviado', (data) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('Mensaje_Enviado', data);
+      print(data);
       onMessageSent(data);
     });
+    newIncidentNotifier.value = !newIncidentNotifier.value;
   }
 
   void disconnect() {
