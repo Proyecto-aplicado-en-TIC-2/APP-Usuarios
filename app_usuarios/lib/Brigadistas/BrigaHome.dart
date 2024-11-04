@@ -24,34 +24,34 @@ enum EmergencyState {
 class BrigaHomescreen extends StatefulWidget {
   const BrigaHomescreen({super.key});
 
+
+
+
   @override
   _HomescreenState createState() => _HomescreenState();
 }
 
 class _HomescreenState extends State<BrigaHomescreen> {
-
   EmergencyState? _emergencyState;
-
-
 
   @override
   void initState() {
     super.initState();
     _checkEmergencyStatus();
-    WebSocketService.newIncidentNotifier.addListener(() {
+    WebSocketService.newIncidentNotifier.addListener(_incidentListener);
+  }
+
+  void _incidentListener() {
+    if (mounted) {
       setState(() {
         _checkEmergencyStatus();
       });
-    });
+    }
   }
 
   @override
   void dispose() {
-
-    WebSocketService.newIncidentNotifier.removeListener(() {
-      _checkEmergencyStatus();
-    });
-
+    WebSocketService.newIncidentNotifier.removeListener(_incidentListener);
     super.dispose();
   }
 
@@ -65,7 +65,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
     String? Mensaje_Enviado = prefs.getString('Mensaje_Enviado');
     String? Close_incident_broadcast = prefs.getString('Close_incident_broadcast');
 
-    if (Close_incident_broadcast != null && Close_incident_broadcast.isNotEmpty) {
+    if (Close_incident_broadcast != null && Close_incident_broadcast.isNotEmpty && mounted) {
       print('cerrado');
       setState(() {
         _emergencyState = EmergencyState.closed;
@@ -74,20 +74,19 @@ class _HomescreenState extends State<BrigaHomescreen> {
       await prefs.setBool('APH_ok', false);
       await prefs.setString('Mensaje_Enviado', '');
       await prefs.setString('Close_incident_broadcast', '');
-    } else if (Mensaje_Enviado != null && Mensaje_Enviado.isNotEmpty) {
+    } else if (Mensaje_Enviado != null && Mensaje_Enviado.isNotEmpty && mounted) {
       print('EmergencyState_1');
       setState(() {
         _emergencyState = EmergencyState.sent;
       });
       await prefs.setString('Mensaje_Enviado', '');
-    } else if (APH_ok == true) {
+    } else if (APH_ok == true && mounted) {
       print('EmergencyState_2');
       setState(() {
         _emergencyState = EmergencyState.received;
-        print(_emergencyState);
       });
       await prefs.setBool('APH_ok', false);
-    } else if (onTheWay == true) {
+    } else if (onTheWay == true && mounted) {
       print('EmergencyState_3');
       setState(() {
         _emergencyState = EmergencyState.inProgress;
@@ -108,11 +107,11 @@ class _HomescreenState extends State<BrigaHomescreen> {
           children: [
             const UserHello(),
             if (_emergencyState == EmergencyState.sent)
-                const EmergencyState_1(),
+              const EmergencyState_1(),
             if (_emergencyState == EmergencyState.received)
-                const EmergencyState_2(),
+              const EmergencyState_2(),
             if (_emergencyState == EmergencyState.inProgress)
-                const EmergencyState_3(),
+              const EmergencyState_3(),
             const SizedBox(height: 30),
             const EmergencyLayout(),
             const SizedBox(height: 30),

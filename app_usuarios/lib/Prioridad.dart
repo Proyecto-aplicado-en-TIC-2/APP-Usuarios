@@ -1,13 +1,19 @@
 import 'package:appv2/Components/CustonAppbar.dart';
 import 'package:appv2/Components/EmergencyCard.dart';
 import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/UbicacionMediaprioridad_2.dart';
 import 'package:flutter/material.dart';
 import 'MiPerfil.dart';
 import 'UbicacionAltaPrioridad.dart';
 import 'UbicacionMediaPrioridad.dart';
 
 class PrioridadScreen extends StatelessWidget {
-  const PrioridadScreen({super.key});
+  final double type;
+
+  const PrioridadScreen({
+    Key? key,
+    required this.type,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +43,21 @@ class PrioridadScreen extends StatelessWidget {
               description:
               'Requiere intervención inmediata. Ejemplos: pérdida de conciencia, dificultad para respirar, sangrado abundante.',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UbicacionMediaprioridadScreen(),
-                  ),
-                );
+                if(type == 1){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen(priority: 'Alta'),
+                    ),
+                  );
+                }else{
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen_2(priority: 'Alta'),
+                    ),
+                  );
+                }
               },
               textColor: const Color(0xffffffff),
             ),
@@ -53,12 +68,21 @@ class PrioridadScreen extends StatelessWidget {
               description:
               'Situaciones serias pero no críticas. Ejemplos: fracturas, heridas profundas, dolor intenso persistente.',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UbicacionMediaprioridadScreen(),
-                  ),
-                );
+                if(type == 1){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen(priority: 'Media'),
+                    ),
+                  );
+                }else{
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen_2(priority: 'Media'),
+                    ),
+                  );
+                }
               },
               textColor: basilTheme.onSurface,
             ),
@@ -69,12 +93,21 @@ class PrioridadScreen extends StatelessWidget {
               description:
               'Emergencias menores que no requieren atención inmediata. Ejemplos: cortes leves, mareos, molestias menores.',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UbicacionMediaprioridadScreen(),
-                  ),
-                );
+                if(type == 1){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen(priority: 'Baja'),
+                    ),
+                  );
+                }else{
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UbicacionMediaprioridadScreen_2(priority: 'Baja'),
+                    ),
+                  );
+                }
               },
               textColor: basilTheme.onSurface,
             ),

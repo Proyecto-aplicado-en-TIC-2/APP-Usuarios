@@ -27,7 +27,7 @@ class _HomescreenState extends State<UserHello> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? names = prefs.getString('names') ?? 'Usuario';
     String? lastNames = prefs.getString('lastNames') ?? '';
-    String? role = prefs.getString('user_role') ?? 'Usuario';
+    String? role = prefs.getString('roles') ?? 'Usuario';
 
     setState(() {
       userName = '$names $lastNames';

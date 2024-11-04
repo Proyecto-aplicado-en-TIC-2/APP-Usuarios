@@ -63,7 +63,7 @@ class Homescreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PrioridadScreen(), 
+                        builder: (context) =>  const PrioridadScreen(type: 1),
                       ),
                     );
                   },
@@ -76,7 +76,7 @@ class Homescreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PrioridadScreen(), 
+                        builder: (context) => const PrioridadScreen(type: 2),
                       ),
                     );
                   },

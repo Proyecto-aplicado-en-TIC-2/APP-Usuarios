@@ -76,6 +76,9 @@ flutter:
     - assets/Logo_UPB.png
     - assets/TengoEmergencia.png
     - assets/ReportarEmergencia.png
+    - assets/alerta_card_1.png
+    - assets/alerta_card_2.png
+    - assets/alerta_card_3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

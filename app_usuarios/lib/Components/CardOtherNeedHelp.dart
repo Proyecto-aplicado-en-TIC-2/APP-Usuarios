@@ -30,7 +30,7 @@ class CardOtherNeedHelp extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PrioridadScreen()),
+              MaterialPageRoute(builder: (context) => const PrioridadScreen(type: 2)),
             );
           },
           child: SizedBox(

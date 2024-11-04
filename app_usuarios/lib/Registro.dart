@@ -13,35 +13,46 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RegisterScreen extends StatelessWidget {
-  RegisterScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
-  // Controladores para los campos de texto
+  @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController(); // Controlador para el número de celular
+  final TextEditingController phoneController = TextEditingController();
+
+  bool isLoading = false;
 
   Future<void> registerUser(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+
     final String firstName = firstNameController.text.trim();
     final String lastName = lastNameController.text.trim();
     final String email = emailController.text.trim();
     final String password = passwordController.text;
     final String phone = phoneController.text.trim();
 
-    // Validación básica
     if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
       );
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
     final Uri url = Uri.parse(APIConstants.registerEndpoint);
 
     try {
-      // Realizar la solicitud POST
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -51,7 +62,7 @@ class RegisterScreen extends StatelessWidget {
             'names': firstName,
             'last_names': lastName,
             'mail': email,
-            'phone_number': phone, // Añade el número de celular al cuerpo de la solicitud
+            'phone_number': phone,
             'relationship_with_the_university': 'Student'
           },
         }),
@@ -60,7 +71,6 @@ class RegisterScreen extends StatelessWidget {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
-        // Almacena datos en SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', responseData['access_token']);
         await prefs.setString('user_role', responseData['roles']);
@@ -68,11 +78,9 @@ class RegisterScreen extends StatelessWidget {
         await prefs.setString('names', responseData['names']);
         await prefs.setString('lastNames', responseData['lastNames']);
 
-        // Conecta al WebSocket
         final webSocketService = WebSocketService();
         await webSocketService.connect();
 
-        // Redirige a la pantalla correcta según el rol
         if (responseData['roles'] == 'prehospital_care_accounts') {
           Navigator.pushReplacement(
             context,
@@ -81,11 +89,10 @@ class RegisterScreen extends StatelessWidget {
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>  BrigaHomescreen()),
+            MaterialPageRoute(builder: (context) => BrigaHomescreen()),
           );
         }
 
-        // Limpiar campos después del registro
         firstNameController.clear();
         lastNameController.clear();
         emailController.clear();
@@ -104,6 +111,10 @@ class RegisterScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error en la conexión: $e')),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -116,7 +127,9 @@ class RegisterScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: SingleChildScrollView(
-            child: Column(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -124,37 +137,50 @@ class RegisterScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 Text(
                   'Regístrese',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface)
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: basilTheme?.onSurface),
                 ),
                 const SizedBox(height: 30),
-                Box(topLabel: 'Nombres',
-                    bottomHelperText: '',
+                Box(
+                  topLabel: 'Nombres',
+                  bottomHelperText: '',
                   inputType: TextInputType.name,
-                  controller: firstNameController,),
-                Box(topLabel: 'Apellidos',
-                    bottomHelperText: '',
-                    controller: lastNameController,
-                  inputType: TextInputType.name,),
-                Box(topLabel: 'Correo institucional',
-                    bottomHelperText: 'Ingresa tu correo institucional de preferencia',
-                    controller: emailController,
-                  inputType: TextInputType.emailAddress,),
-                Box(topLabel: 'Número de celular',
-                    bottomHelperText: 'Ingresa tu número de celular',
-                    controller: phoneController,
-                  inputType: TextInputType.phone,),
-                Boxispassword(topLabel: 'Contraseña',
-                    bottomHelperText: 'Ingresa tu contraseña',
-                    controller: passwordController,
-                    inputType: TextInputType.visiblePassword,
-                    isPassword: true,),
-              const SizedBox(height: 10),
-              Center(
-                child: Button(
-                  text: 'Registrarme',
-                  width: 133,
-                  onClick: () => registerUser(context),),
-              ),
+                  controller: firstNameController,
+                ),
+                Box(
+                  topLabel: 'Apellidos',
+                  bottomHelperText: '',
+                  controller: lastNameController,
+                  inputType: TextInputType.name,
+                ),
+                Box(
+                  topLabel: 'Correo institucional',
+                  bottomHelperText: 'Ingresa tu correo institucional de preferencia',
+                  controller: emailController,
+                  inputType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 10),
+                Box(
+                  topLabel: 'Número de celular',
+                  bottomHelperText: 'Ingresa tu número de celular',
+                  controller: phoneController,
+                  inputType: TextInputType.phone,
+                ),
+                const SizedBox(height: 10),
+                Boxispassword(
+                  topLabel: 'Contraseña',
+                  bottomHelperText: 'Ingresa tu contraseña',
+                  controller: passwordController,
+                  inputType: TextInputType.visiblePassword,
+                  isPassword: true,
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: Button(
+                    text: 'Registrarme',
+                    width: 133,
+                    onClick: () => registerUser(context),
+                  ),
+                ),
                 const SizedBox(height: 30),
                 Center(
                   child: CustonOutlinedButton(
