@@ -14,7 +14,7 @@ class APIConstants{
   static Future<String> updateUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userID = prefs.getString('userid');
-    String? roles = prefs.getString('roles');
+    String? roles = prefs.getString('roles_partition_key');
     if (userID == null) {
       throw Exception("UserID not found in SharedPreferences.");
     }
