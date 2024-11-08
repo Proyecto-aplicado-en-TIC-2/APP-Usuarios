@@ -69,8 +69,8 @@ class WebSocketService {
     });
 
     // Escuchar el evento `APH_case`, mostrar notificación y almacenar datos en SharedPreferences
-    socket!.on('APH_case', (data) async {
-      print('Mensaje de APH_case recibido: $data');
+      socket!.on('APH_case', (data) async {
+        print('Mensaje de APH_case recibido: $data');
       _showNotification("Caso APH", data.toString());
 
       SharedPreferences prefs = await SharedPreferences.getInstance();

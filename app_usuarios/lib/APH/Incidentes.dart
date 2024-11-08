@@ -1,3 +1,8 @@
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/Components/OtherEmergency.dart';
+import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/Prioridad.dart';
+import 'package:appv2/TipoEmergencia.dart';
 import 'package:flutter/material.dart';
 import 'aphome.dart';
 import 'Informes.dart';
@@ -6,25 +11,12 @@ import 'otrasincidencia.dart';
 import '../MiPerfil.dart';
 
 class APHIncidentesScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
-                );
-            },
-          ),
-        ],
-        backgroundColor: Colors.white,
-      ),
+
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -38,49 +30,29 @@ class APHIncidentesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
+            OtherEmergency(width: 372,
+                height: 64,
+                color: basilTheme?.custom,
+                text: 'Incidencia medica',
+                onTap: () {
+                  Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => APHIncidenciaMedicaScreen()),
+                  MaterialPageRoute(builder: (context) => const PrioridadScreen(type: 2)),
                 );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: const Center(
-                child: Text(
-                  'Incidencia médica',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => APHIotrasincidenciasScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                OtherEmergency(width: 372,
+                height: 64,
+                color: basilTheme?.secondary,
+                text: 'Otro tipo de incidencia',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TiposEmergenciaScreen()),
+                    );
+                  },
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: const Center(
-                child: Text(
-                  'Otro tipo de incidencia',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
             const SizedBox(height: 30),
             const Text(
               'Historial de incidentes',
@@ -110,41 +82,7 @@ class APHIncidentesScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => APHHomeScreen()),
-              );
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InformesScreen()),
-              );
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'Incidentes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Informes',
-          ),
-        ],
-      ),
+
     );
   }
 }

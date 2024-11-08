@@ -71,12 +71,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
+        final String token = responseData['access_token'] ?? 'Sin asignar';
+        final String roles = responseData['roles'] ?? 'Sin asignar';
+        final String userid = responseData['userid'] ?? 'Sin asignar';
+        final String names = responseData['names'] ?? 'Sin asignar';
+        final String lastName = responseData['lastNames'] ?? 'Sin asignar';
+        final String mail = responseData['mail'] ?? 'Sin asignar';
+        final String phone_number = responseData['phone_number'] ?? 'Sin asignar';
+        final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ?? 'Sin asignar';
+
+        final String idUniversity = responseData['userDetails']?['idUniversity']?.toString() ?? 'Sin asignar';
+        final String documentType = responseData['userDetails']?['documentType'] ?? 'Sin asignar';
+        final String documentNumber = responseData['userDetails']?['documentNumber'] ?? 'Sin asignar';
+        final String address = responseData['userDetails']?['address'] ?? 'Sin asignar';
+        final String emergencyContactPhoneNumber = responseData['userDetails']?['emergencyContactPhoneNumber']?.toString() ?? '';
+        final String birthday = responseData['userDetails']?['birthday'] ?? 'Sin asignar';
+        final String bloodType = responseData['userDetails']?['bloodType'] ?? 'Sin asignar';
+        final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
+        final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
+        final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', responseData['access_token']);
-        await prefs.setString('user_role', responseData['roles']);
-        await prefs.setString('userid', responseData['userid']);
-        await prefs.setString('names', responseData['names']);
-        await prefs.setString('lastNames', responseData['lastNames']);
+        await prefs.setString('jwt_token', token);
+        if(roles == 'upb_community_accounts'){
+          await prefs.setString('roles', 'Comunidad UPB');
+        }
+        if(roles == 'prehospital_care_accounts'){
+          await prefs.setString('roles', 'APH');
+        }
+        await prefs.setString('relationshipWithTheUniversity', relationshipWithTheUniversity);
+        await prefs.setString('roles_partition_key', roles);
+        await prefs.setString('userid', userid);
+        await prefs.setString('names', names);
+        await prefs.setString('lastNames', lastName);
+        await prefs.setString('mail', mail);
+        await prefs.setString('phone_number', phone_number);
+
+        await prefs.setString('idUniversity', idUniversity);
+        await prefs.setString('documentType', documentType);
+        await prefs.setString('documentNumber', documentNumber);
+        await prefs.setString('address', address);
+        await prefs.setString('emergencyContactPhoneNumber', emergencyContactPhoneNumber);
+        await prefs.setString('birthday', birthday);
+        await prefs.setString('bloodType', bloodType);
+        await prefs.setString('allergies', allergies);
+        await prefs.setString('dependentMedications', dependentMedications);
+        await prefs.setString('disabilities', disabilities);
 
         final webSocketService = WebSocketService();
         await webSocketService.connect();

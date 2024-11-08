@@ -5,11 +5,17 @@ import 'package:appv2/TipoEmergencia.dart';
 class OtherEmergency extends StatelessWidget {
   final double width;
   final double height;
+  final Color? color;
+  final String text;
+  final VoidCallback onTap;
 
   const OtherEmergency({
     Key? key,
     required this.width,
     required this.height,
+    required this.color,
+    required this.text,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -19,26 +25,21 @@ class OtherEmergency extends StatelessWidget {
     return Center(
       child: Card(
         clipBehavior: Clip.hardEdge,
-        color: basilTheme!.secondary,
+        color: color,
         elevation: 3, // Elevación light/3 de Material Design 3
-        shadowColor: basilTheme.surfaceContainer, // Color de la sombra
+        shadowColor: basilTheme!.surfaceContainer, // Color de la sombra
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
         child: InkWell(
           splashColor: basilTheme.surfaceContainer,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const TiposEmergenciaScreen()),
-            );
-          },
+          onTap: onTap,
           child: SizedBox(
             width: width,
             height: height,
             child: Center( // Centra el contenido en ambas direcciones
               child: Text(
-                'Otro tipo de emergencias',
+                text,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
               ),

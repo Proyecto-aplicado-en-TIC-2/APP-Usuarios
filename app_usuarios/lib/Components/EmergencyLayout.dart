@@ -1,5 +1,7 @@
 import 'package:appv2/Components/CardNeedHelp.dart';
 import 'package:appv2/Components/CardOtherNeedHelp.dart';
+import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/TipoEmergencia.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,6 +12,7 @@ class EmergencyLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calcula el ancho y altura basados en el tamaño del contenedor
@@ -46,6 +49,14 @@ class EmergencyLayout extends StatelessWidget {
               child: OtherEmergency(
                 width: double.infinity,
                 height: otherEmergencyHeight,
+                color: basilTheme?.secondary,
+                text: 'Otro tipo de emergencias',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TiposEmergenciaScreen()),
+                  );
+                },
               ),
             ),
           ],

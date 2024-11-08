@@ -100,7 +100,7 @@ class _EditMyPerfil extends State<EditMyPerfil> {
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final url  = await APIConstants.updateUserDetails();
+      final url = await APIConstants.updateUserDetails();
       String? token = prefs.getString('jwt_token');
       if (token == null) {
         throw Exception("Access token not found in SharedPreferences.");
@@ -120,22 +120,22 @@ class _EditMyPerfil extends State<EditMyPerfil> {
         body: jsonEncode({
           "partition_key": partitionKey,
           "id": userId,
-          "names": namesController.text,
-          "last_names": lastNameController.text,
-          "mail": mailController.text,
-          "phone_number": phoneController.text,
+          "names": namesController.text.isNotEmpty ? namesController.text : names,
+          "last_names": lastNameController.text.isNotEmpty ? lastNameController.text : lastName,
+          "mail": mailController.text.isNotEmpty ? mailController.text : mail,
+          "phone_number": phoneController.text.isNotEmpty ? phoneController.text : phone,
           "relationshipWithTheUniversity": relationshipWithTheUniversity,
           "userDetails": {
-            "idUniversity": idUniversityController.text,
-            "documentType": documentTypeController.text,
-            "documentNumber": documentNumberController.text,
-            "address": addressController.text,
-            "emergencyContactPhoneNumber": emergencyContactPhoneNumberController.text ,
-            "birthday": birthdayController.text,
-            "bloodType": bloodTypeController.text,
-            "allergies": allergiesController.text,
-            "dependentMedications": dependentMedicationsController.text,
-            "disabilities": disabilitiesController.text,
+            "idUniversity": idUniversityController.text.isNotEmpty ? idUniversityController.text : idUniversity,
+            "documentType": documentTypeController.text.isNotEmpty ? documentTypeController.text : documentType,
+            "documentNumber": documentNumberController.text.isNotEmpty ? documentNumberController.text : documentNumber,
+            "address": addressController.text.isNotEmpty ? addressController.text : address,
+            "emergencyContactPhoneNumber": emergencyContactPhoneNumberController.text.isNotEmpty ? emergencyContactPhoneNumberController.text : emergencyContactPhoneNumber,
+            "birthday": birthdayController.text.isNotEmpty ? birthdayController.text : birthday,
+            "bloodType": bloodTypeController.text.isNotEmpty ? bloodTypeController.text : bloodType,
+            "allergies": allergiesController.text.isNotEmpty ? allergiesController.text : allergies,
+            "dependentMedications": dependentMedicationsController.text.isNotEmpty ? dependentMedicationsController.text : dependentMedications,
+            "disabilities": disabilitiesController.text.isNotEmpty ? disabilitiesController.text : disabilities,
           }
         }),
       );
@@ -143,33 +143,19 @@ class _EditMyPerfil extends State<EditMyPerfil> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
-        final String phone_number = responseData['phone_number']?.toString() ?? '';
-        final String names = responseData['names']?.toString() ?? '';
-        final String lastName = responseData['lastName']?.toString() ?? '';
-        final String idUniversity = responseData['userDetails']?['idUniversity']?.toString() ?? '';
-        final String documetnType = responseData['userDetails']?['documentType'] ?? '';
-        final String documentNumber = responseData['userDetails']?['documentNumber'] ?? '';
-        final String address = responseData['userDetails']?['address'] ?? '';
-        final String emergencyContactPhoneNumber = responseData['userDetails']?['emergencyContactPhoneNumber']?.toString() ?? '';
-        final String birthday = responseData['userDetails']?['birthday'] ?? '';
-        final String bloodType = responseData['userDetails']?['bloodType'] ?? '';
-        final String allergies = responseData['userDetails']?['allergies'] ?? '';
-        final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? '';
-        final String disabilities = responseData['userDetails']?['disabilities'] ?? '';
-
-        await prefs.setString('phone_number', phone_number);
-        await prefs.setString('names', names);
-        await prefs.setString('lastName', lastName);
-        await prefs.setString('idUniversity', idUniversity);
-        await prefs.setString('documetnType', documetnType);
-        await prefs.setString('documentNumber', documentNumber);
-        await prefs.setString('address', address);
-        await prefs.setString('emergencyContactPhoneNumber', emergencyContactPhoneNumber);
-        await prefs.setString('birthday', birthday);
-        await prefs.setString('bloodType', bloodType);
-        await prefs.setString('allergies', allergies);
-        await prefs.setString('dependentMedications', dependentMedications);
-        await prefs.setString('disabilities', disabilities);
+        await prefs.setString('phone_number', responseData['phone_number'] ?? '');
+        await prefs.setString('names', responseData['names'] ?? '');
+        await prefs.setString('lastName', responseData['lastName'] ?? '');
+        await prefs.setString('idUniversity', responseData['userDetails']?['idUniversity'] ?? '');
+        await prefs.setString('documentType', responseData['userDetails']?['documentType'] ?? '');
+        await prefs.setString('documentNumber', responseData['userDetails']?['documentNumber'] ?? '');
+        await prefs.setString('address', responseData['userDetails']?['address'] ?? '');
+        await prefs.setString('emergencyContactPhoneNumber', responseData['userDetails']?['emergencyContactPhoneNumber'] ?? '');
+        await prefs.setString('birthday', responseData['userDetails']?['birthday'] ?? '');
+        await prefs.setString('bloodType', responseData['userDetails']?['bloodType'] ?? '');
+        await prefs.setString('allergies', responseData['userDetails']?['allergies'] ?? '');
+        await prefs.setString('dependentMedications', responseData['userDetails']?['dependentMedications'] ?? '');
+        await prefs.setString('disabilities', responseData['userDetails']?['disabilities'] ?? '');
 
         // Mostrar SnackBar de éxito
         ScaffoldMessenger.of(context).showSnackBar(

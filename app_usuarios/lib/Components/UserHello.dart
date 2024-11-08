@@ -53,7 +53,7 @@ class _HomescreenState extends State<UserHello> {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
 
     return Container(
-      alignment: Alignment.center,
+      alignment: Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

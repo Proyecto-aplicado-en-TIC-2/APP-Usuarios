@@ -38,7 +38,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
 
     return Scaffold(
       appBar: const CustonAppbar(
-          automaticallyImplyLeading: true
+          automaticallyImplyLeading: false
       ),
       body: screens[currentIndex], // Muestra la pantalla correspondiente al índice
       bottomNavigationBar: BottomNavigationBar(

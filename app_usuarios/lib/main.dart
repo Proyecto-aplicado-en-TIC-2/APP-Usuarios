@@ -1,5 +1,6 @@
 import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/Button.dart';
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/theme.dart';
 import 'package:appv2/Registro.dart';
@@ -134,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (roles == 'prehospital_care_accounts') {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => APHHomeScreen()),
+              MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0,)),
             );
           } else {
             Navigator.pushReplacement(

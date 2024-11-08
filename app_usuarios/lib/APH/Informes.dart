@@ -1,6 +1,8 @@
 import 'package:appv2/APH/Incidentes.dart';
 import 'package:appv2/APH/InformePendiente.dart';
 import 'package:appv2/APH/aphome.dart';
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/MiPerfil.dart';
 import 'package:flutter/material.dart';
@@ -51,34 +53,17 @@ class InformesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.white,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+             Text(
               'Informes pendientes',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -120,53 +105,16 @@ class InformesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text(
               'Historial de Informes',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 10),
             // Puedes agregar las tarjetas de historial aquí
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => APHHomeScreen()),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => APHIncidentesScreen()),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => InformesScreen()),
-            );
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'Incidentes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Informes',
-          ),
-        ],
-      ),
+
     );
   }
 }
