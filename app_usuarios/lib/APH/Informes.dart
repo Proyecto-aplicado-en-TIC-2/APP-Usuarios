@@ -62,7 +62,7 @@ class InformesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
              Text(
-              'Informes pendientes',
+              '  Historial de Informes',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 10),
@@ -77,14 +77,13 @@ class InformesScreen extends StatelessWidget {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text('No reports available'));
                   }
-
                   final reports = snapshot.data!;
                   return ListView.builder(
                     itemCount: reports.length,
                     itemBuilder: (context, index) {
                       final report = reports[index];
                       return InformeCard(
-                        nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
+                        nombre: "${report['reporter']['names']}${report['reporter']['lastNames']}",
                         ubicacion: report['location']['block'],
                         salon: report['location']['classroom'].toString(),
                         descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
@@ -105,11 +104,6 @@ class InformesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            Text(
-              'Historial de Informes',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
-            ),
-            const SizedBox(height: 10),
             // Puedes agregar las tarjetas de historial aquí
           ],
         ),
@@ -140,55 +134,61 @@ class InformeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: basilTheme!.onSurface),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              nombre,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Ubicación: $ubicacion  Salón: $salon',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              descripcion,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: prioridadColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                prioridad,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: prioridadColor,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nombre,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                 ),
-              ),
+                const SizedBox(height: 5),
+                Text(
+                  'Ubicación: $ubicacion   Salón: $salon',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      descripcion,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                    ),
+                    const SizedBox(width: 20),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: basilTheme.onSurface),
+                      ),
+                        child: Text(
+                          prioridad,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
+                        ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Icon(
+              Icons.arrow_forward_ios_sharp, // Tamaño del icono
+              color: basilTheme?.onSurface,
+              size: 18,
             ),
           ],
         ),

@@ -1,16 +1,16 @@
 import 'package:appv2/APH/Informes.dart';
+import 'package:appv2/Components/Box.dart';
+import 'package:appv2/Components/Button.dart';
+import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/buildDropdownField.dart';
+import 'package:appv2/Components/enums.dart';
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/websocket_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../MiPerfil.dart';
 
-enum Quadrant { Division1, Division2, Division3, Division4, Division5, Division6, Division7 }
-enum Block { Block1, Block2, Block3, Block4, Block5, Block6, Block7, Block8, Block9, Block10, Block12, Block13, Block14, Block15, Block16, Block17, Block18, Block19, Block20, Block21, Block22, Block23, Block24, ComplejoDeIngenierias, Forum, BloquesExternosAlCampus }
-enum Gender { Male, Female, Otro }
-enum EquipmentType { APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS, GUANTES_DE_LATEX, LANCETA, TIRILLA, MACROGOTERO, SOL_SALINA, TAPABOCA, TORUNDA_DE_ALGODON, VENDA_DE_GASA_4_5YD, VENDA_DE_GASA_5_5YD, VENDA_ELASTICA_4_5YD, VENDA_ELASTICA_5_5YD }
-enum EquipmentSource { Botiquin, Gabinete, TraumaPolideportivo }
-enum Cases { Incendio, Medico, Estructural }
 
 class APHInformePendienteScreen extends StatefulWidget {
   final Map<String, dynamic> report;
@@ -22,50 +22,68 @@ class APHInformePendienteScreen extends StatefulWidget {
 }
 
 class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
-  Quadrant? selectedQuadrant;
-  Block? selectedBlock;
-  Gender? selectedGender;
-  EquipmentType? selectedEquipmentType;
-  EquipmentSource? selectedEquipmentSource;
-  Cases? selectedCase;
 
-  final TextEditingController classroomController = TextEditingController();
-  final TextEditingController referencePointController = TextEditingController();
-  final TextEditingController consultationReasonController = TextEditingController();
-  final TextEditingController diseaseController = TextEditingController();
-  final TextEditingController physicalExamController = TextEditingController();
-  final TextEditingController sentToController = TextEditingController();
-  final TextEditingController diagnosticImpressionController = TextEditingController();
-  final TextEditingController treatmentController = TextEditingController();
   final TextEditingController hourArriveController = TextEditingController();
-  final TextEditingController callHourController = TextEditingController();
-  final TextEditingController callAttendntNameController = TextEditingController();
+  //patient
+  final TextEditingController namesController = TextEditingController();
+  final TextEditingController lastNamesController = TextEditingController();
+  final TextEditingController typeDocumentController = TextEditingController();
+  final TextEditingController numberOfDocumentController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController relationshipWithTheUniversityController = TextEditingController();
+  //contact
   final TextEditingController attentionForSecureLineController = TextEditingController();
   final TextEditingController meansOfAttentionController = TextEditingController();
   final TextEditingController startedInformationController = TextEditingController();
+  //evaluation
+  final TextEditingController reasonForConsultationController = TextEditingController();
+  final TextEditingController diseaseController = TextEditingController();
+  final TextEditingController physicalExamController = TextEditingController();
+  final TextEditingController recordController = TextEditingController();
+  final TextEditingController sentToController = TextEditingController();
+  final TextEditingController diagnosticImpressionController = TextEditingController();
+  final TextEditingController treatmentController = TextEditingController();
   final TextEditingController followUpController = TextEditingController();
-  final TextEditingController noteForFollowUpController = TextEditingController();
+  //attendnt
+  final TextEditingController callHourController = TextEditingController();
+  final TextEditingController callAttendntNameController = TextEditingController();
+  //equipment
   final TextEditingController quantityController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
+  final TextEditingController sourceController = TextEditingController();
+  //noteForFollowUp
+  final TextEditingController noteForFollowUpController = TextEditingController();
+
+
+
 
   @override
   void dispose() {
-    classroomController.dispose();
-    referencePointController.dispose();
-    consultationReasonController.dispose();
-    diseaseController.dispose();
-    physicalExamController.dispose();
-    sentToController.dispose();
-    diagnosticImpressionController.dispose();
-    treatmentController.dispose();
-    hourArriveController.dispose();
-    callHourController.dispose();
-    callAttendntNameController.dispose();
+    namesController.dispose();
+    lastNamesController.dispose();
+    typeDocumentController.dispose();
+    numberOfDocumentController.dispose();
+    genderController.dispose();
+    ageController.dispose();
+    relationshipWithTheUniversityController.dispose();
     attentionForSecureLineController.dispose();
     meansOfAttentionController.dispose();
     startedInformationController.dispose();
+    reasonForConsultationController.dispose();
+    diseaseController.dispose();
+    physicalExamController.dispose();
+    recordController.dispose();
+    sentToController.dispose();
+    diagnosticImpressionController.dispose();
+    treatmentController.dispose();
     followUpController.dispose();
-    noteForFollowUpController.dispose();
+    callHourController.dispose();
+    callAttendntNameController.dispose();
     quantityController.dispose();
+    typeController.dispose();
+    sourceController.dispose();
+    noteForFollowUpController.dispose();
     super.dispose();
   }
 
@@ -81,15 +99,16 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
         },
         "hourArrive": hourArriveController.text,
         "close_case": "true",
+        "on_the_way": "false",
         "classificationAttention": "",
         "patient": {
-          "names": widget.report['reporter']['names'],
-          "lastNames": widget.report['reporter']['lastNames'],
-          "typeDocument": widget.report['reporter']['typeDocument'],
-          "numberOfDocument": widget.report['reporter']['numberOfDocument'],
-          "gender": selectedGender?.toString().split('.').last,
-          "age": widget.report['reporter']['age'],
-          "relationshipWithTheUniversity": widget.report['reporter']['relationshipWithTheUniversity']
+          "names": namesController.text,
+          "lastNames": lastNamesController.text,
+          "typeDocument": typeDocumentController.text,
+          "numberOfDocument": numberOfDocumentController.text,
+          "gender": genderController.text,
+          "age": ageController.text,
+          "relationshipWithTheUniversity": relationshipWithTheUniversityController.text
         },
         "contact": {
           "attentionForSecureLine": attentionForSecureLineController.text,
@@ -97,7 +116,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           "startedInformation": startedInformationController.text
         },
         "evaluation": {
-          "reasonForConsultation": consultationReasonController.text,
+          "reasonForConsultation": reasonForConsultationController.text,
           "disease": diseaseController.text,
           "physicalExam": physicalExamController.text,
           "record": "",
@@ -111,9 +130,9 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           "callAttendntName": callAttendntNameController.text
         },
         "equipment": {
-          "quantity": int.tryParse(quantityController.text) ?? 0,
-          "type": selectedEquipmentType?.toString().split('.').last,
-          "source": selectedEquipmentSource?.toString().split('.').last
+          "quantity": quantityController.text,
+          "type": typeController.text,
+          "source": sourceController.text
         },
         "noteForFollowUp": noteForFollowUpController.text
       };
@@ -141,173 +160,108 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('UPB Segura'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MiPerfilScreen()),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.white,
-      ),
+      backgroundColor: basilTheme?.surface,
+      appBar: const CustonAppbar(automaticallyImplyLeading: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Informe',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            buildDropdownField<Quadrant>(
-              label: 'Cuadrante',
-              value: selectedQuadrant,
-              items: Quadrant.values,
-              onChanged: (value) => setState(() => selectedQuadrant = value),
-            ),
-            buildDropdownField<Block>(
-              label: 'Bloque',
-              value: selectedBlock,
-              items: Block.values,
-              onChanged: (value) => setState(() => selectedBlock = value),
-            ),
-            buildDropdownField<Gender>(
-              label: 'Género del Paciente',
-              value: selectedGender,
-              items: Gender.values,
-              onChanged: (value) => setState(() => selectedGender = value),
-            ),
-            buildDropdownField<EquipmentType>(
-              label: 'Tipo de Equipo',
-              value: selectedEquipmentType,
-              items: EquipmentType.values,
-              onChanged: (value) => setState(() => selectedEquipmentType = value),
-            ),
-            buildDropdownField<EquipmentSource>(
-              label: 'Fuente de Equipo',
-              value: selectedEquipmentSource,
-              items: EquipmentSource.values,
-              onChanged: (value) => setState(() => selectedEquipmentSource = value),
-            ),
-            buildDropdownField<Cases>(
-              label: 'Caso',
-              value: selectedCase,
-              items: Cases.values,
-              onChanged: (value) => setState(() => selectedCase = value),
-            ),
-            buildTextField('Hora de Llegada', 'HH:MM', controller: hourArriveController),
-            buildTextField('Salón', '', controller: classroomController),
-            buildTextField('Punto de referencia', '', controller: referencePointController),
-            buildTextField('Motivo de consulta', '', controller: consultationReasonController),
-            buildTextField('Enfermedad', '', controller: diseaseController),
-            buildTextField('Examen físico', '', controller: physicalExamController),
-            buildTextField('Enviado a', '', controller: sentToController),
-            buildTextField('Impresión diagnóstica', '', controller: diagnosticImpressionController),
-            buildTextField('Tratamiento', '', controller: treatmentController),
-            buildTextField('Seguimiento', '', controller: followUpController),
-            buildTextField('Hora de Llamada', 'HH:MM:SS', controller: callHourController),
-            buildTextField('Nombre del Atendente', '', controller: callAttendntNameController),
-            buildTextField('Atención por Línea Segura', '', controller: attentionForSecureLineController),
-            buildTextField('Medios de Atención', '', controller: meansOfAttentionController),
-            buildTextField('Información de Inicio', '', controller: startedInformationController),
-            buildTextField('Cantidad de Equipo', '', controller: quantityController),
-            buildTextField('Nota de Seguimiento', '', controller: noteForFollowUpController),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _closeReport,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 134, 97, 83),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+             Container(
+               padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Informe',
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(color: basilTheme?.onSurface),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                ),
-                child: const Text(
-                  'Cerrar Reporte',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.report['reporter']['names'] + widget.report['reporter']['lastNames'],
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.report['reporter']['relationshipWithTheUniversity'],
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 30),
+            Text(
+              'Paciente',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 30),
+            Box(
+                topLabel: 'Nombres',
+                bottomHelperText: '',
+                controller: namesController,
+                inputType: TextInputType.name
+            ),
+            Box(
+                topLabel: 'Apellidos',
+                bottomHelperText: '',
+                controller: namesController,
+                inputType: TextInputType.name
+            ),
+            BuildDropdownField<DocumetType>(
+                topLabel: 'Tipo de documetno',
+                bottomHelperText: '',
+                items: DocumetType.values,
+                controller: typeDocumentController
+            ),
+            Box(
+                topLabel: 'Numero de documento',
+                bottomHelperText: '',
+                controller: numberOfDocumentController,
+                inputType:  TextInputType.number
+            ),
+            BuildDropdownField<Gender>(
+                topLabel: 'Genero',
+                bottomHelperText: '',
+                items: Gender.values,
+                controller: genderController
+            ),
+            Box(
+                topLabel: 'Edad',
+                bottomHelperText: '',
+                controller: ageController,
+                inputType:  TextInputType.number
+            ),
+            BuildDropdownField<RelationshipWithTheUniversity>(
+                topLabel: 'Relacion con la universidad',
+                bottomHelperText: '',
+                items: RelationshipWithTheUniversity.values,
+                controller: relationshipWithTheUniversityController
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Contacto',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 30),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Button(text: 'Cancelar',
+                  width: 105,
+                  onClick: () => Navigator.pop(context)
+              ),
+              Button(text: 'Completar',
+                  width: 157,
+                  onClick: () => _closeReport
+              ),
+            ],
+          )
+
           ],
         ),
-      ),
-    );
-  }
-
-  Widget buildTextField(String label, String placeholder, {int maxLines = 1, bool isReadOnly = false, TextEditingController? controller}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: controller,
-            maxLines: maxLines,
-            readOnly: isReadOnly,
-            decoration: InputDecoration(
-              hintText: placeholder,
-              fillColor: const Color.fromARGB(255, 252, 228, 236),
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildDropdownField<T>({
-    required String label,
-    required T? value,
-    required List<T> items,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          DropdownButtonFormField<T>(
-            value: value,
-            decoration: InputDecoration(
-              fillColor: const Color.fromARGB(255, 252, 228, 236),
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            onChanged: onChanged,
-            items: items.map((T item) {
-              return DropdownMenuItem<T>(
-                value: item,
-                child: Text(item.toString().split('.').last),
-              );
-            }).toList(),
-          ),
-        ],
       ),
     );
   }

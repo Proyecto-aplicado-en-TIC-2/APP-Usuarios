@@ -4,6 +4,12 @@ enum Block {
   Block12, Block13, Block14, Block15, Block16, Block17, Block18, Block19, Block20,
   Block21, Block22, Block23, Block24, ComplejoDeIngenierias, Forum, BloquesExternosAlCampus
 }
+enum RelationshipWithTheUniversity {
+  universitary,
+  estudent,
+  professor,
+  visitor,
+}
 enum Gender { Male, Female, Otro }
 enum EquipmentType {
   APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS,
@@ -121,6 +127,13 @@ String getDisplayName(dynamic item) {
         return 'B-';
       case BloodType.AB_NEG:
         return 'AB-';
+    }
+  } else if(item is RelationshipWithTheUniversity){
+    switch (item){
+      case RelationshipWithTheUniversity.estudent: return 'Estudiante';
+      case RelationshipWithTheUniversity.professor: return 'Profesor';
+      case RelationshipWithTheUniversity.universitary: return 'Unviersitario';
+      case RelationshipWithTheUniversity.visitor: return 'Visitante';
     }
   }
   return item.toString().split('.').last; // Valor por defecto si no hay nombre personalizado

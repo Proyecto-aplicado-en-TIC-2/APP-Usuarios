@@ -1,17 +1,61 @@
 import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/APH/InformePendiente.dart';
 import 'package:appv2/Components/OtherEmergency.dart';
 import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/Prioridad.dart';
 import 'package:appv2/TipoEmergencia.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'aphome.dart';
 import 'Informes.dart';
 import 'IncidenciaMedica.dart';
 import 'otrasincidencia.dart';
 import '../MiPerfil.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class APHIncidentesScreen extends StatelessWidget {
 
+  Future<List<Map<String, dynamic>>> fetchReports() async {
+    try {
+      // Obtener la URL completa con el userID desde SharedPreferences
+      final url = await APIConstants.getAllReportsEndpoint();
+      print("Fetching reports from URL: $url");  // Verificar la URL
+
+      // Obtener el token de SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+      if (token == null) {
+        throw Exception("Access token not found in SharedPreferences.");
+      }
+
+      // Configurar los encabezados de la solicitud con el Bearer Token
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      };
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print("Response body: ${response.body}"); // Verificar el cuerpo de la respuesta
+        List<dynamic> data = json.decode(response.body);
+
+        if (data.isNotEmpty) {
+          return data.map((item) => item as Map<String, dynamic>).toList();
+        } else {
+          print("Response is empty or not in the expected format.");
+          return [];
+        }
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Failed to load reports: $e');
+      return [];
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
@@ -22,12 +66,9 @@ class APHIncidentesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Reportar',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+             Text(
+              '  Reportar',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 20),
             OtherEmergency(width: 372,
@@ -54,31 +95,49 @@ class APHIncidentesScreen extends StatelessWidget {
                   },
                 ),
             const SizedBox(height: 30),
-            const Text(
-              'Historial de incidentes',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+            Text(
+              '  Informes pendientes',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchReports(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading reports'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No reports available'));
+                  }
+                  final reports = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: reports.length,
+                    itemBuilder: (context, index) {
+                      final report = reports[index];
+                      return InformeCard(
+                        nombre: "${report['reporter']['names']}${report['reporter']['lastNames']}",
+                        ubicacion: report['location']['block'],
+                        salon: report['location']['classroom'].toString(),
+                        descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
+                        prioridad: report['priority'],
+                        prioridadColor: report['priority'] == 'Alta' ? Colors.red : Colors.green,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => APHInformePendienteScreen(report: report),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 10),
-            IncidenciaCard(
-              nombre: 'Jaider Joham Morales',
-              ubicacion: 'Bloque 11',
-              salon: '202',
-              descripcion: 'Descripción',
-              prioridad: 'Alta',
-              prioridadColor: Colors.red,
-            ),
-            const SizedBox(height: 10),
-            IncidenciaCard(
-              nombre: 'Otro tipo de incidencia',
-              ubicacion: 'Bloque 11',
-              salon: '202',
-              descripcion: 'Descripción',
-              prioridad: '',
-              prioridadColor: Colors.transparent,
-            ),
+
           ],
         ),
       ),
@@ -87,83 +146,89 @@ class APHIncidentesScreen extends StatelessWidget {
   }
 }
 
-class IncidenciaCard extends StatelessWidget {
+class InformeCard extends StatelessWidget {
   final String nombre;
   final String ubicacion;
   final String salon;
   final String descripcion;
   final String prioridad;
   final Color prioridadColor;
+  final VoidCallback onTap;
 
-  IncidenciaCard({
+  const InformeCard({
     required this.nombre,
     required this.ubicacion,
     required this.salon,
     required this.descripcion,
     required this.prioridad,
     required this.prioridadColor,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(15),
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: Colors.pink[50],
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(8),
+          color: basilTheme?.primaryContainer,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              nombre,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Ubicación: $ubicacion  Salón: $salon',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              descripcion,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            if (prioridad.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: prioridadColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nombre,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                 ),
-                child: Text(
-                  prioridad,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: prioridadColor,
-                  ),
+                const SizedBox(height: 5),
+                Text(
+                  'Ubicación: $ubicacion   Salón: $salon',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      descripcion,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                    ),
+                    const SizedBox(width: 20),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        prioridad,
+                        style:  Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Icon(
+              Icons.arrow_forward_ios_sharp, // Tamaño del icono
+              color: basilTheme?.onSurface,
+              size: 18,
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+
 
 

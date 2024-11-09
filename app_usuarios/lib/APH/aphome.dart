@@ -98,6 +98,7 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
                     default:
                       prioridadColor = Colors.red;
                   }
+                  return null;
                 },
               ),
             ),
