@@ -2,6 +2,8 @@ import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/BoxIsPassword.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonOutlinedButton.dart';
+import 'package:appv2/Components/buildDropdownField.dart';
+import 'package:appv2/Components/enums.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/main.dart';
@@ -21,6 +23,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController relationshipWithTheUniversityController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -33,14 +36,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       isLoading = true;
     });
-
+    final String relationshipWithTheUniversity = relationshipWithTheUniversityController.text.trim();
     final String firstName = firstNameController.text.trim();
     final String lastName = lastNameController.text.trim();
     final String email = emailController.text.trim();
     final String password = passwordController.text;
     final String phone = phoneController.text.trim();
 
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty ||
+        relationshipWithTheUniversity.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
       );
@@ -63,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'last_names': lastName,
             'mail': email,
             'phone_number': phone,
-            'relationship_with_the_university': 'Student'
+            'relationship_with_the_university': relationshipWithTheUniversity
           },
         }),
       );
@@ -204,6 +208,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   bottomHelperText: 'Ingresa tu número de celular',
                   controller: phoneController,
                   inputType: TextInputType.phone,
+                ),
+                BuildDropdownField<RelationshipWithTheUniversity>(
+                    topLabel: 'Relación con la universidad',
+                    bottomHelperText: '',
+                    items: RelationshipWithTheUniversity.values,
+                    controller: relationshipWithTheUniversityController
                 ),
                 const SizedBox(height: 10),
                 Boxispassword(

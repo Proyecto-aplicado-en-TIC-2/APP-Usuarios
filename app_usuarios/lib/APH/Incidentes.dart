@@ -17,6 +17,8 @@ import 'dart:convert';
 
 class APHIncidentesScreen extends StatelessWidget {
 
+
+
   Future<List<Map<String, dynamic>>> fetchReports() async {
     try {
       // Obtener la URL completa con el userID desde SharedPreferences
@@ -107,9 +109,9 @@ class APHIncidentesScreen extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading reports'));
+                    return const Center(child: Text('Error cargando informes'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No reports available'));
+                    return const Center(child: Text('No tiene informes pendientes'));
                   }
                   final reports = snapshot.data!;
                   return ListView.builder(
@@ -137,7 +139,6 @@ class APHIncidentesScreen extends StatelessWidget {
                 },
               ),
             ),
-
           ],
         ),
       ),
@@ -170,60 +171,64 @@ class InformeCard extends StatelessWidget {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: basilTheme?.primaryContainer,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: basilTheme?.primaryContainer,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  nombre,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Ubicación: $ubicacion   Salón: $salon',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                ),
-                const SizedBox(height: 5),
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      descripcion,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                      nombre,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                     ),
-                    const SizedBox(width: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        prioridad,
-                        style:  Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
-                      ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Ubicación: $ubicacion   Salón: $salon',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                     ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Text(
+                          descripcion,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                        ),
+                        const SizedBox(width: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffffffff),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            prioridad,
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
+                          ),
+                        ),
+                      ],
+                    )
                   ],
-                )
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_sharp,
+                  color: basilTheme?.onSurface,
+                  size: 18,
+                ),
               ],
             ),
-            Icon(
-              Icons.arrow_forward_ios_sharp, // Tamaño del icono
-              color: basilTheme?.onSurface,
-              size: 18,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10), // Espacio entre informes
+        ],
       ),
     );
   }

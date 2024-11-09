@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     const basilTheme = BasilTheme();
 
     return MaterialApp(
-      title: 'Basil',
+      title: 'Gestion de riesgos UPB',
       theme: basilTheme.toThemeData(), // Aplica BasilTheme como tema principal
       home: const LoginScreen(),
       debugShowCheckedModeBanner: false,

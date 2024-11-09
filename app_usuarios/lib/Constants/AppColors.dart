@@ -99,7 +99,7 @@ class BasilApp extends StatelessWidget {
     const basilTheme = BasilTheme();
 
     return MaterialApp(
-      title: 'Basil',
+      title: 'Gestion de riesgos UPB',
       theme: basilTheme.toThemeData(),
       home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
