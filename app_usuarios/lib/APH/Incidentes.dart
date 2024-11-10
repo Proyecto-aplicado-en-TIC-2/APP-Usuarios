@@ -173,7 +173,12 @@ class InformeCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          Container(
+          Card(
+            elevation: 3, // Elevación de la tarjeta
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -227,7 +232,8 @@ class InformeCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 10), // Espacio entre informes
+          ),
+        const SizedBox(height: 10), // Espacio entre informes
         ],
       ),
     );

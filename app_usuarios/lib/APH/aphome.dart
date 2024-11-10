@@ -16,26 +16,45 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class APHHomeScreen extends StatefulWidget {
+ class APHHomeScreen extends StatefulWidget {
   @override
-  _APHHomeScreenState createState() => _APHHomeScreenState();
+   _APHHomeScreenState  createState() =>  _APHHomeScreenState();
 }
 
-class _APHHomeScreenState extends State<APHHomeScreen> {
+class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> incidentes = [];
+  bool isLoading = true; // Indica si está cargando
+  late AnimationController _animationController;
+  int _currentPageIndex = 0;
+  String? onTheWayCaseId;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true); // Hace que la animación respire
+
+    _loadSelectedIncident();
     _loadIncidents();
 
-    // Escuchar cambios en el ValueNotifier del Singleton
     WebSocketService.newIncidentNotifier.addListener(() {
       _loadIncidents();
     });
   }
 
+  Future<void> _loadSelectedIncident() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      onTheWayCaseId = prefs.getString('onTheWayCase');
+    });
+  }
+
   Future<void> _loadIncidents() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       final url = await APIConstants.getAllReportsEndpoint();
       print("Fetching reports from URL: $url");
@@ -57,20 +76,45 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
         print("Response body: ${response.body}");
         List<dynamic> data = json.decode(response.body);
 
-        setState(() {
-          incidentes = data.isNotEmpty
-              ? data.map((item) => item as Map<String, dynamic>).toList()
-              : [];
-        });
+        if (mounted) {
+          setState(() {
+            incidentes = data.isNotEmpty
+                ? data.map((item) => item as Map<String, dynamic>).toList()
+                : [];
+
+            incidentes.sort((a, b) {
+              if (a['id'] == onTheWayCaseId) return -1;
+              if (b['id'] == onTheWayCaseId) return 1;
+
+              const prioridadOrden = {'Alta': 1, 'Media': 2, 'Baja': 3};
+              return (prioridadOrden[a['priority']] ?? 3).compareTo(prioridadOrden[b['priority']] ?? 3);
+            });
+          });
+        }
       } else {
         throw Exception('Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Failed to load reports: $e');
+      if (mounted) {
+        setState(() {
+          incidentes = [];
+        });
+      }
+    } finally {
       setState(() {
-        incidentes = [];
+        isLoading = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    WebSocketService.newIncidentNotifier.removeListener(() {
+      _loadIncidents();
+    });
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,27 +136,56 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: incidentes.isEmpty
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : incidentes.isEmpty
                   ? const Center(child: Text('No tiene incidencias asignadas'))
-                  : ListView.builder(
+                  : PageView.builder(
+                scrollDirection: Axis.vertical,
                 itemCount: incidentes.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPageIndex = index;
+                  });
+                },
                 itemBuilder: (context, index) {
                   final report = incidentes[index];
-                  return InformeCard(
-                    nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
-                    ubicacion: report['location']['block'],
-                    salon: report['location']['classroom'].toString(),
-                    descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
-                    prioridad: report['priority'],
-                    prioridadColor: report['priority'] == 'Alta' ? Colors.red : Colors.green,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => APHPrioridadAltaScreen(incidentData: report),
+                  final isSelected = report['id'] == onTheWayCaseId;
+                  final color = isSelected ? basilTheme!.primary : basilTheme!.primaryContainer;
+                  final textColor = isSelected ? Colors.white : basilTheme!.onSurface;
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InformeCard(
+                        nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
+                        ubicacion: report['location']['block'],
+                        salon: report['location']['classroom'].toString(),
+                        descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
+                        prioridad: report['priority'],
+                        prioridadColor: color,
+                        textColor: textColor,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => APHPrioridadAltaScreen(incidentData: report),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      ScaleTransition(
+                        scale: Tween(begin: 1.0, end: 1.2).animate(_animationController),
+                        child: Icon(
+                          _currentPageIndex == incidentes.length - 1
+                              ? Icons.arrow_drop_up_rounded
+                              : Icons.arrow_drop_down_rounded,
+                          color: basilTheme.onSurfaceVariant,
+                          size: 38,
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   );
                 },
               ),
@@ -129,12 +202,6 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    WebSocketService.newIncidentNotifier.removeListener(_loadIncidents);
-    super.dispose();
-  }
 }
 
 class InformeCard extends StatelessWidget {
@@ -144,6 +211,7 @@ class InformeCard extends StatelessWidget {
   final String descripcion;
   final String prioridad;
   final Color prioridadColor;
+  final Color textColor;
   final VoidCallback onTap;
 
   const InformeCard({
@@ -153,72 +221,70 @@ class InformeCard extends StatelessWidget {
     required this.descripcion,
     required this.prioridad,
     required this.prioridadColor,
+    required this.textColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: basilTheme?.primaryContainer,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nombre,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Ubicación: $ubicacion   Salón: $salon',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Text(
-                          descripcion,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+      child: Card(
+        elevation: 3,
+        color: prioridadColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nombre,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Ubicación: $ubicacion   Salón: $salon',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Text(
+                        descripcion,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor),
+                      ),
+                      const SizedBox(width: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: textColor),
                         ),
-                        const SizedBox(width: 20),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            prioridad,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
-                          ),
+
+                        child: Text(
+                          prioridad,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor),
                         ),
-                      ],
-                    )
-                  ],
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_sharp,
-                  color: basilTheme?.onSurface,
-                  size: 18,
-                ),
-              ],
-            ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              Icon(
+                Icons.arrow_forward_ios_sharp,
+                color: textColor,
+                size: 18,
+              ),
+            ],
           ),
-          const SizedBox(height: 10), // Espacio entre informes
-        ],
+        ),
       ),
     );
   }

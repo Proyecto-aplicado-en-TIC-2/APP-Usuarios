@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/APH/aphome.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CallButton.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
+import 'package:appv2/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../MiPerfil.dart';
@@ -23,7 +26,7 @@ class APHPrioridadAltaScreen extends StatefulWidget {
 }
 
 class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
-
+  final WebSocketService _webSocketService = WebSocketService();
   String idUPB = 'N/A';
   String emergencyContactPhoneNumber = 'N/A';
   String allergies = 'N/A';
@@ -35,9 +38,47 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
 
   @override
   void initState() {
-    super.initState();
-    _loadUserData();
+    if(mounted){
+      super.initState();
+      _loadUserData();
+    }
+  }
 
+  Future<void> _onTheWay() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userid = await prefs.getString('userid');
+      await prefs.setString('onTheWayCase', widget.incidentData['id']);
+
+      final reportData = {
+        "help": {
+          "user_id": userid,
+          "case_id": widget.incidentData['id'],
+          "partition_key": widget.incidentData['partition_key']
+        },
+        "close_case": "false",
+        "on_the_way": "true"
+      };
+
+        _webSocketService.onTheWay(reportData, (String serverResponse) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(serverResponse)),
+            );
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0)),
+                  (Route<dynamic> route) => false,
+            );
+          }
+        });
+    } catch (e) {
+      print('Failed on the way: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -95,6 +136,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
             phone_number = data['phone_number'] != null && data['phone_number'].isNotEmpty
                 ? data['phone_number']
                 : '00';
+
             bloodType = data['userDetails']['bloodType'] != null && data['userDetails']['bloodType'].isNotEmpty
                 ? data['userDetails']['bloodType']
                 : 'N/A';
@@ -207,7 +249,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
                   CallButton(phone: phone_number),
                   Button(text: 'En camino',
                       width: 155,
-                      onClick: () => {})
+                      onClick: () => _onTheWay())
                 ],
               ),
             ],

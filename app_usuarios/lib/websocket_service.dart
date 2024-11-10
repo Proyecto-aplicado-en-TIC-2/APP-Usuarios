@@ -126,7 +126,24 @@ class WebSocketService {
 
   void closeReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('APH', reportData);
+    socket?.on('close_case', (data) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('close_case', data);
+      print(data);
+      onMessageSent(data);
+    });
     newIncidentNotifier.value = !newIncidentNotifier.value;
+  }
+
+  void onTheWay(Map<String, dynamic> reportData, Function(String) onMessageSent) {
+    socket?.emit('APH', reportData);
+    socket?.on('on_the_way_aph', (data) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('on_the_way_aph', data);
+      print(data);
+      onMessageSent(data);
+    });
+
   }
 
   void sendReport(Map<String, dynamic> reportData, Function(String) onMessageSent) {

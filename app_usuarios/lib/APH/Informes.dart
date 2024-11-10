@@ -139,59 +139,65 @@ class InformeCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
+          Card(
+            elevation: 3, // Elevación de la tarjeta
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: basilTheme!.onSurface),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nombre,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Ubicación: $ubicacion   Salón: $salon',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Text(
-                          descripcion,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
-                        ),
-                        const SizedBox(width: 20),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: basilTheme.onSurface),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: basilTheme!.onSurface),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nombre,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Ubicación: $ubicacion   Salón: $salon',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            descripcion,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
                           ),
-                          child: Text(
-                            prioridad,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
+                          const SizedBox(width: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: basilTheme.onSurface),
+                            ),
+                            child: Text(
+                              prioridad,
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_sharp, // Tamaño del icono
-                  color: basilTheme?.onSurface,
-                  size: 18,
-                ),
-              ],
+                        ],
+                      )
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_sharp,
+                    color: basilTheme?.onSurface,
+                    size: 18,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10), // Espacio entre cada informe
