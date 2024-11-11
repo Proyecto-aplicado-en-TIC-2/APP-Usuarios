@@ -117,8 +117,12 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
 
   @override
   void dispose() {
+    _loadSelectedIncident();
+    _loadIncidents();
     WebSocketService.newIncidentNotifier.removeListener(() {
       _loadIncidents();
+      _loadSelectedIncident();
+
     });
     _animationController.dispose();
     super.dispose();
@@ -165,8 +169,7 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
                   final color = isSelected ? basilTheme!.primary : basilTheme!.primaryContainer;
                   final textColor = isSelected ? Colors.white : basilTheme.onSurface;
 
-                  return Expanded(
-                    child: Column(
+                  return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         InformeCard(
@@ -200,7 +203,6 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
                           ),
                         ),
                       ],
-                    )
                   );
                 },
               ),
