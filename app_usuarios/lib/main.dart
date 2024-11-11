@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
           final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
           final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
-          final bool in_service = responseData['in_service'] ?? false;
+          final String in_service = responseData['in_service'].toString();
           final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
 
 
@@ -137,7 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('allergies', allergies);
           await prefs.setString('dependentMedications', dependentMedications);
           await prefs.setString('disabilities', disabilities);
-          await prefs.setBool('in_service', in_service);
+          if(in_service == 'true'){
+            await prefs.setBool('in_service', true);
+          }else{
+            await prefs.setBool('in_service', false);
+          }
           await prefs.setString('quadrant', quadrant);
 
           final webSocketService = WebSocketService();

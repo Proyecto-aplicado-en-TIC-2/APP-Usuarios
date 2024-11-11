@@ -20,6 +20,16 @@ class APIConstants{
     return '$baseUrl/prehospital-care/$userID';
   }
 
+  static Future<String> GetWebSocketInfo() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userID = prefs.getString('userid');
+
+    return '$baseUrl/websockets/GetWebSocketInfo/$userID';
+
+
+  }
+
   static Future<String> GetUserInfoDetails_APH(String userId, String roles) async {
 
     if(roles == 'upb_community_accounts'){
@@ -31,6 +41,7 @@ class APIConstants{
     }else{
       return '$baseUrl/brigadiers/$userId';
     }
+
   }
 
   static Future<String> updateUserDetails() async {

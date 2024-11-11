@@ -18,7 +18,7 @@ class UserHello extends StatefulWidget {
 
 class _HomescreenState extends State<UserHello> {
   final WebSocketService _webSocketService = WebSocketService();
-  bool isActive = true;
+  bool isActive = false;
   bool isBrigadeAccount = false;
   bool isAph = false;
   String greetingMessage = '';
@@ -39,11 +39,16 @@ class _HomescreenState extends State<UserHello> {
   @override
   void initState() {
     super.initState();
+
     _loadUserData();
     _getQuadrant();
     WebSocketService.newIncidentNotifier.addListener(() {
       _closeCase();
       _setEmergency();
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      _loadBrigadistState();
     });
   }
   Future<void> _brigadistaUpdateState(bool _isActive) async {
@@ -52,8 +57,6 @@ class _HomescreenState extends State<UserHello> {
       final reportData = {
           "in_service" : _isActive
       };
-
-
       _webSocketService.brigadistaUpdateState(reportData, (String serverResponse) {
         if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -75,12 +78,64 @@ class _HomescreenState extends State<UserHello> {
       _closeCase();
       _setEmergency();
     });
+    _loadBrigadistState();
     super.dispose();
+  }
+
+  Future<void> _loadBrigadistState() async {
+
+    try {
+      // Obtener la URL completa con el userID desde SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+      String? id = prefs.getString('userid');
+      String? roles_partition_key = prefs.getString('roles_partition_key');
+      print(id);
+      print(roles_partition_key);
+
+      if(roles_partition_key != 'brigade_accounts') return;
+
+      if (token == null ) {
+        throw Exception("Access token not found in SharedPreferences.");
+      }
+
+      final url = await APIConstants.GetWebSocketInfo();
+      print("Fetching reports from URL: $url");  // Verificar la URL
+
+      // Configurar los encabezados de la solicitud con el Bearer Token
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      };
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+
+        final data = json.decode(response.body);
+        print(data['inService']);
+        if (data.isNotEmpty) {
+          setState(() {
+            isActive = data['inService'] ?? false;
+          });
+        } else {
+          print("Response is empty or not in the expected format.");
+        }
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Failed to load reports: $e');
+    }
   }
 
 
   Future<void> _getQuadrant() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? roles_partition_key = prefs.getString('roles_partition_key');
+    print(roles_partition_key);
+
+    if(roles_partition_key != 'prehospital_care_accounts') return;
+
     final url = await APIConstants.GetAphQuadrant();
 
     String? token = prefs.getString('jwt_token');
