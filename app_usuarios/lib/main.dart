@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
           final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
           final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
-          final bool in_service = responseData['in_service'] ?? 'Sin asignar';
+          final bool in_service = responseData['in_service'] ?? false;
           final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
