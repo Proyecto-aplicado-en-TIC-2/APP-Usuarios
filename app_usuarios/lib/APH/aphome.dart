@@ -165,45 +165,47 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
                   final color = isSelected ? basilTheme!.primary : basilTheme!.primaryContainer;
                   final textColor = isSelected ? Colors.white : basilTheme.onSurface;
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InformeCard(
-                        nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
-                        ubicacion: report['location']['block'],
-                        salon: report['location']['classroom'].toString(),
-                        descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
-                        prioridad: report['priority'],
-                        prioridadColor: color,
-                        textColor: textColor,
-                        isAwaitingAssignment: isAwaitingAssignment && !isAssigned,
-                        isAssigned: isAssigned,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => APHPrioridadAltaScreen(incidentData: report),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      ScaleTransition(
-                        scale: Tween(begin: 1.0, end: 1.2).animate(_animationController),
-                        child: Icon(
-                          _currentPageIndex == incidentes.length - 1
-                              ? Icons.arrow_drop_up_rounded
-                              : Icons.arrow_drop_down_rounded,
-                          color: basilTheme.onSurfaceVariant,
-                          size: 38,
+                  return Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InformeCard(
+                          nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
+                          ubicacion: report['location']['block'],
+                          salon: report['location']['classroom'].toString(),
+                          descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
+                          prioridad: report['priority'],
+                          prioridadColor: color,
+                          textColor: textColor,
+                          isAwaitingAssignment: isAwaitingAssignment && !isAssigned,
+                          isAssigned: isAssigned,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => APHPrioridadAltaScreen(incidentData: report),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        ScaleTransition(
+                          scale: Tween(begin: 1.0, end: 1.2).animate(_animationController),
+                          child: Icon(
+                            _currentPageIndex == incidentes.length - 1
+                                ? Icons.arrow_drop_up_rounded
+                                : Icons.arrow_drop_down_rounded,
+                            color: basilTheme.onSurfaceVariant,
+                            size: 38,
+                          ),
+                        ),
+                      ],
+                    )
                   );
                 },
               ),
             ),
-            const SizedBox(height: 30),
+
             Text(
               'Llamada de emergencia',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),

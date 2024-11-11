@@ -18,7 +18,6 @@ class WebSocketService {
   WebSocketService._internal() {
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
-
     flutterLocalNotificationsPlugin.initialize(initSettings);
     _requestNotificationPermission();
     connect();
@@ -30,15 +29,23 @@ class WebSocketService {
     }
   }
 
-  Future<void> _showNotification(String title, String message) async {
-    const androidDetails = AndroidNotificationDetails(
-      'gloval_warning_channel', 'Global Warnings',
-      channelDescription: 'Channel for global warnings',
+  Future<void> _showNotification(String title,
+      String message, {
+        Color color = Colors.blue,
+        IconData icon = Icons.notification_important}) async {
+    const channelId = 'notifications_channel';
+    const channelName = 'Alerts';
+    final androidDetails = AndroidNotificationDetails(
+      channelId,
+      channelName,
+      channelDescription: 'Custom notifications for different socket events',
       importance: Importance.max,
       priority: Priority.high,
+      color: color,
+      styleInformation: BigTextStyleInformation(message), // Allows for larger message text
+      icon: icon.codePoint.toString(), // Custom icon
     );
-
-    const platformDetails = NotificationDetails(android: androidDetails);
+    var platformDetails = NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
       0, title, message, platformDetails,
     );
@@ -69,95 +76,73 @@ class WebSocketService {
       print('Conexión exitosa al WebSocket');
     });
 
-    // Escuchar el evento `APH_case`, mostrar notificación y almacenar datos en SharedPreferences
-      socket!.on('APH_case', (data) async {
-        print('Mensaje de APH_case recibido: $data');
-      _showNotification("Caso APH", data.toString());
+    // Custom alerts for each socket event
 
+    socket!.on('APH_case', (data) async {
+      print('Mensaje de APH_case recibido: $data');
+      _showNotification("Caso APH", "Nuevo caso recibido", color: Colors.red, icon: Icons.warning);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final String caseId = data['Id_reporte'];
       final String caseDataJson = jsonEncode(data);
-
       await prefs.setString(caseId, caseDataJson);
-      print('Datos guardados para el ID de reporte: $caseId');
-
       newIncidentNotifier.value = !newIncidentNotifier.value;
     });
 
-    // Escuchar el evento `GlovalWarning` y mostrar notificación
     socket!.on('GlovalWarning', (data) {
       print('Mensaje de GlovalWarning recibido: $data');
-      _showNotification("Alerta Global", data.toString());
+      _showNotification("Alerta Global", "Se ha emitido una alerta global. Detalles: $data", color: Colors.orange, icon: Icons.announcement);
     });
 
     socket!.on('Report_assign', (data) async {
       print('Report_assign: $data');
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('APH_name', data['APH_name']);
       await prefs.setString('APH_phone', data['APH_phone']);
       await prefs.setString('APH_time', data['APH_time']);
-      await prefs.setBool('APH_ok', true);
+      _showNotification("Reporte Asignado", "Se le ha asignado un nuevo reporte.", color: Colors.green, icon: Icons.assignment);
       newIncidentNotifier.value = !newIncidentNotifier.value;
-      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
 
     socket!.on('on_the_way', (data) async {
       print('on_the_way: $data');
-      if(data  == true ){
+      if (data == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool('on_the_way', true);
       }
+      _showNotification("En Camino", "Un brigadista está en camino para el caso.", color: Colors.blueAccent, icon: Icons.directions_run);
       newIncidentNotifier.value = !newIncidentNotifier.value;
-      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
 
     socket!.on('Brigadista_case_assigned', (data) async {
       print('Brigadista_case_assigned: $data');
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // Obtener el mapa actual de asignaciones de brigadistas
       Map<String, dynamic> brigadistaAssignments = Map<String, dynamic>.from(
           jsonDecode(prefs.getString('brigadistaAssignments') ?? '{}'));
-
-      // Agregar la nueva asignación al mapa
       brigadistaAssignments[data['case_id']] = {
         'names': data['names'],
         'lastNames': data['lastNames'],
         'phone_number': data['phone_number']
       };
-
-      // Guardar el mapa actualizado en SharedPreferences
       await prefs.setString('brigadistaAssignments', jsonEncode(brigadistaAssignments));
-
-      // Notificar cambios
-      WebSocketService.newIncidentNotifier.value = !WebSocketService.newIncidentNotifier.value;
+      _showNotification("Caso Asignado", "Se le ha asignado un caso como brigadista.", color: Colors.purple, icon: Icons.add_task);
+      newIncidentNotifier.value = !newIncidentNotifier.value;
     });
 
     socket!.on('Brigadista_case', (data) async {
       print('Brigadista_case: $data');
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // Convierte el objeto JSON en una cadena antes de guardarlo
-      String jsonData = jsonEncode(data);
-
-      await prefs.setString('Brigadista_case', jsonData);
+      await prefs.setString('Brigadista_case', jsonEncode(data));
+      _showNotification("Nuevo Caso de Brigadista", "Detalles: $data", color: Colors.teal, icon: Icons.campaign);
       newIncidentNotifier.value = !newIncidentNotifier.value;
-
-      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
+
     socket!.on('Close_incident_broadcast', (data) async {
       print('Close_incident_broadcast: $data');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('Close_incident_broadcast', true);
+      _showNotification("Caso Cerrado", "Se ha cerrado un incidente.", color: Colors.grey, icon: Icons.close);
       newIncidentNotifier.value = !newIncidentNotifier.value;
-      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
-
-
-
-
 
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
   }
