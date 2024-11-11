@@ -11,6 +11,15 @@ class APIConstants{
   static const String Register = '$baseUrl/auth/register/upb-community';
 
 
+
+  static Future<String> GetAphQuadrant() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userID = prefs.getString('userid');
+
+    return '$baseUrl/prehospital-care/$userID';
+  }
+
   static Future<String> GetUserInfoDetails_APH(String userId, String roles) async {
 
     if(roles == 'upb_community_accounts'){

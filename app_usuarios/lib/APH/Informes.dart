@@ -88,7 +88,7 @@ class InformesScreen extends StatelessWidget {
                         ubicacion: report['location']['block'],
                         salon: report['location']['classroom'].toString(),
                         descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
-                        prioridad: 'si',
+                        prioridad: report['classificationAttention'],
                         prioridadColor: Colors.green,
                         onTap: () {
                           Navigator.push(
@@ -97,7 +97,10 @@ class InformesScreen extends StatelessWidget {
                               builder: (context) => SeeHistoryReportDetails(report: report),
                             ),
                           );
-                        },
+                        }, date: report['date']['date'],
+                        hourRequest: report['date']['hourRequest'],
+                        hourArrive: report['date']['hourArrive'],
+                        hourCloseAttentionn: report['date']['hourCloseAttentionn'],
                       );
                     },
                   );
@@ -122,6 +125,10 @@ class InformeCard extends StatelessWidget {
   final String prioridad;
   final Color prioridadColor;
   final VoidCallback onTap;
+  final String date;
+  final String hourRequest;
+  final String hourArrive;
+  final String hourCloseAttentionn;
 
   const InformeCard({
     required this.nombre,
@@ -131,6 +138,10 @@ class InformeCard extends StatelessWidget {
     required this.prioridad,
     required this.prioridadColor,
     required this.onTap,
+    required this.date,
+    required this.hourRequest,
+    required this.hourArrive,
+    required this.hourCloseAttentionn,
   });
 
   @override
@@ -185,12 +196,43 @@ class InformeCard extends StatelessWidget {
                                   border: Border.all(color: basilTheme.onSurface),
                                 ),
                                 child: Text(
-                                  prioridad,
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
+                                    prioridad
                                 ),
                               ),
                             ],
-                          )
+                          ),
+                          Text(
+                            'Fecha de la incideancia',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              date,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora de la solicitud',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourRequest,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora en que la solicitud fue aceptada',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourArrive,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora en la que se cerro el incidente',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourCloseAttentionn,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
                         ],
                       ),
                   ),

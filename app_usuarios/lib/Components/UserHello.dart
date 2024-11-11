@@ -4,10 +4,11 @@ import 'package:appv2/APH/BrigadierEmergencyInfo.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CallButton.dart';
 import 'package:appv2/Constants/AppColors.dart';
+import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 class UserHello extends StatefulWidget {
   const UserHello({super.key});
 
@@ -16,8 +17,10 @@ class UserHello extends StatefulWidget {
 }
 
 class _HomescreenState extends State<UserHello> {
+  final WebSocketService _webSocketService = WebSocketService();
   bool isActive = true;
   bool isBrigadeAccount = false;
+  bool isAph = false;
   String greetingMessage = '';
   String userName = 'Usuario';
   String userRole = 'Usuario';
@@ -30,20 +33,44 @@ class _HomescreenState extends State<UserHello> {
   String i_prioridad = '';
   bool isInCase = false;
   String aphPhone = '';
+  String? quadrant = 'N/A';
 
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _getQuadrant();
     WebSocketService.newIncidentNotifier.addListener(() {
       _closeCase();
       _setEmergency();
     });
   }
+  Future<void> _brigadistaUpdateState(bool _isActive) async {
+    try {
 
+      final reportData = {
+          "in_service" : _isActive
+      };
+
+
+      _webSocketService.brigadistaUpdateState(reportData, (String serverResponse) {
+        if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Estado Actualizado')),
+            );
+            setState(() {
+              isActive = _isActive;
+            });
+        }
+      });
+    } catch (e) {
+      print('Failed on the way: $e');
+    }
+  }
   @override
   void dispose() {
+    _getQuadrant();
     WebSocketService.newIncidentNotifier.removeListener(() {
       _closeCase();
       _setEmergency();
@@ -52,6 +79,46 @@ class _HomescreenState extends State<UserHello> {
   }
 
 
+  Future<void> _getQuadrant() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final url = await APIConstants.GetAphQuadrant();
+
+    String? token = prefs.getString('jwt_token');
+    if (token == null) {
+      print("Error: Token no encontrado en SharedPreferences");
+      throw Exception("Access token not found in SharedPreferences.");
+    }
+
+    // Configurar los encabezados de la solicitud con el Bearer Token
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    print('URL de la solicitud: $url');
+    print('Token: $token');
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
+        await prefs.setString('quadrant', quadrant);
+        print('=======================');
+        print('Quadrant: $quadrant');
+        print('=======================');
+      } else {
+        print('Error en la solicitud. Código de estado: ${response.statusCode}');
+        print('Mensaje de error: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Excepción al realizar la solicitud: $e');
+    }
+  }
 
   Future<void> _closeCase() async {
 
@@ -64,12 +131,17 @@ class _HomescreenState extends State<UserHello> {
         print('Close_incident_broadcast _closeCase $Close_incident_broadcast');
       });
     }
+
   }
 
-
   Future<void> _setEmergency() async {
+
+
     print('_setEmergency');
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      quadrant = prefs.getString('quadrant') ?? 'N/A';
+    });
 
     // Obtiene el JSON almacenado como cadena
     bool? Close_incident_broadcast = prefs.getBool('Close_incident_broadcast');
@@ -111,6 +183,8 @@ class _HomescreenState extends State<UserHello> {
       userRole = roles;
       greetingMessage = _getGreetingMessage();
       isBrigadeAccount = (role == 'brigade_accounts');
+      isAph = (role == 'prehospital_care_accounts');
+      quadrant = prefs.getString('quadrant') ?? 'N/A';
     });
   }
 
@@ -135,6 +209,7 @@ class _HomescreenState extends State<UserHello> {
           content: const Text('¿Quieres cambiar tu estado de actividad?'),
           actions: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextButton(
                   onPressed: () {
@@ -144,23 +219,18 @@ class _HomescreenState extends State<UserHello> {
                 ),
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      isActive = true;
-                    });
+                    _brigadistaUpdateState(true);  // Activo
                     Navigator.of(context).pop();
                   },
                   child: const Text('Activo'),
                 ),
                 TextButton(
                   onPressed: () {
-                    setState(() {
-                      isActive = false;
-                    });
+                    _brigadistaUpdateState(false);  // Inactivo
                     Navigator.of(context).pop();
                   },
                   child: const Text('Inactivo'),
                 ),
-
               ],
             )
           ],
@@ -192,6 +262,17 @@ class _HomescreenState extends State<UserHello> {
             userRole,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurfaceVariant),
           ),
+          if(quadrant != 'N/A' && isAph)
+            Text(
+              'Cuadrante asignado: ${quadrant}',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurfaceVariant),
+            ),
+          if(quadrant == 'N/A' && isAph)
+            Text(
+              'No se encontro un cuadrante asignado',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurfaceVariant),
+            ),
+
           const SizedBox(height: 10),
           if (isBrigadeAccount)
               isInCase?

@@ -82,6 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['operation'] == true && responseData['access_token'] != null) {
+          print('=============================================');
+          print(responseData);
+          print('=============================================');
           final String token = responseData['access_token'] ?? 'Sin asignar';
           final String roles = responseData['roles'] ?? 'Sin asignar';
           final String userid = responseData['userid'] ?? 'Sin asignar';
@@ -103,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
           final bool in_service = responseData['in_service'] ?? false;
           final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
+
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);

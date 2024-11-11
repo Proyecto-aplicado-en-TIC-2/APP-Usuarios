@@ -172,6 +172,22 @@ class WebSocketService {
     });
     newIncidentNotifier.value = !newIncidentNotifier.value;
   }
+  void brigadistaUpdateState(Map<String, dynamic> reportData, Function(String) onMessageSent) {
+    socket?.emit('Brigadiers', reportData);
+
+    socket?.on('Brigadier_update_state_confirmation', (data) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Convertir el mapa `data` a una cadena JSON
+      String jsonData = jsonEncode(data);
+      await prefs.setString('Brigadier_update_state_confirmation', jsonData);
+
+      print(jsonData);
+      onMessageSent(jsonData); // Envía la cadena JSON de vuelta como mensaje
+    });
+
+    newIncidentNotifier.value = !newIncidentNotifier.value;
+  }
 
   void onTheWay(Map<String, dynamic> reportData, Function(String) onMessageSent) {
     socket?.emit('APH', reportData);

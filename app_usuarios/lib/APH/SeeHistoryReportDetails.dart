@@ -66,6 +66,43 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
                     widget.report['reporter']['relationshipWithTheUniversity'] ?? 'N/A',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
                   ),
+                  const SizedBox(height: 30),
+                  Text(
+                    'Registro horario',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    'Fecha de la incideancia',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    widget.report['date']['date']?? 'N/A',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    'Hora de la solicitud',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    widget.report['date']['hourRequest'] ?? 'N/A',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    'Hora en que la solicitud fue aceptada',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    widget.report['date']['hourArrive']?? 'N/A',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    'Hora en la que se cerro el incidente',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
+                  Text(
+                    widget.report['date']['hourCloseAttentionn']?? 'N/A',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                  ),
                 ],
               ),
             ),
