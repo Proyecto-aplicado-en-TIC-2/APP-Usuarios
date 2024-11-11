@@ -110,6 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if(roles == 'prehospital_care_accounts'){
             await prefs.setString('roles', 'APH');
           }
+          if(roles == 'brigade_accounts'){
+            await prefs.setString('roles', 'Brigadista');
+          }
           await prefs.setString('relationshipWithTheUniversity', relationshipWithTheUniversity);
           await prefs.setString('roles_partition_key', roles);
           await prefs.setString('userid', userid);

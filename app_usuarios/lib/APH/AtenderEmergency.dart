@@ -5,6 +5,7 @@ import 'package:appv2/APH/aphome.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CallButton.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/CustonOutlinedButton.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/websocket_service.dart';
@@ -43,12 +44,52 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
       _loadUserData();
     }
   }
+  Future<void> _askForHelpBrigadier() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = await prefs.getString('userid');
+      String caseId = widget.incidentData['id'];
+      await prefs.setString('onTheWayCase', caseId);
+
+      // Guarda el estado de ayuda solicitada junto con el ID del caso
+      List<String> helpRequestedCases = prefs.getStringList('helpRequestedCases') ?? [];
+      if (!helpRequestedCases.contains(caseId)) {
+        helpRequestedCases.add(caseId);
+        await prefs.setStringList('helpRequestedCases', helpRequestedCases);
+      }
+
+      final reportData = {
+        "help": {
+          "user_id": userId,
+          "case_id": caseId,
+          "partition_key": widget.incidentData['partition_key']
+        },
+        "close_case": "false",
+        "on_the_way": "false"
+      };
+
+      _webSocketService.AskForHelp_brigadier(reportData, (String serverResponse) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(serverResponse)),
+          );
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0)),
+                (Route<dynamic> route) => false,
+          );
+        }
+      });
+    } catch (e) {
+      print('Failed to request help for brigadier: $e');
+    }
+  }
 
   Future<void> _onTheWay() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userid = await prefs.getString('userid');
       await prefs.setString('onTheWayCase', widget.incidentData['id']);
+      await prefs.setBool('awaitingBrigadierAssignment', false);
 
       final reportData = {
         "help": {
@@ -82,6 +123,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
   }
 
   Future<void> _loadUserData() async {
+
     setState(() {
       isLoading = true;
     });
@@ -89,7 +131,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
       // Obtener la URL completa con el userID desde SharedPreferences
       final url = await APIConstants.GetUserInfoDetails_APH(
           widget.incidentData['reporter']['id'],
-          widget.incidentData['location']['roles']);
+          widget.incidentData['reporter']['roles']);
       print("Fetching reports from URL: $url");  // Verificar la URL
 
       // Obtener el token de SharedPreferences
@@ -110,7 +152,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
       if (response.statusCode == 200) {
         print("Response body: ${response.body}"); // Verificar el cuerpo de la respuesta
         final data = json.decode(response.body);
-
+        print(data);
         if (data.isNotEmpty) {
           setState(() {
             idUPB = data['userDetails']['idUniversity'] != null && data['userDetails']['idUniversity'].isNotEmpty
@@ -217,6 +259,10 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
                   'Descripción del incidente',
                   widget.incidentData['whatIsHappening'] ?? 'N/A',
                   context),
+              buildInfoRow(
+                  'Punto de referencia',
+                  widget.incidentData['location']['pointOfReference'] ?? 'N/A',
+                  context),
 
               const SizedBox(height: 30),
               // Sección de Lugar del Incidente
@@ -252,6 +298,12 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
                       onClick: () => _onTheWay())
                 ],
               ),
+              const SizedBox(height: 10,),
+              Center(
+                  child: CustonOutlinedButton(text: 'Pedir ayuda a un BRIGADISTA',
+                      onPressed: () => _askForHelpBrigadier(),
+                      width: 220)
+              )
             ],
           ),
         ),

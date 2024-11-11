@@ -189,40 +189,42 @@ class InformeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nombre,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Ubicación: $ubicacion   Salón: $salon',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
+                Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          descripcion,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                          nombre,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                         ),
-                        const SizedBox(width: 20),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            prioridad,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
-                          ),
+                        const SizedBox(height: 5),
+                        Text(
+                          'Ubicación: $ubicacion   Salón: $salon',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                         ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Text(
+                              descripcion,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                            ),
+                            const SizedBox(width: 20),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffffffff),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                prioridad,
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme?.onSurface),
+                              ),
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
+                    ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios_sharp,

@@ -16,17 +16,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
- class APHHomeScreen extends StatefulWidget {
+class APHHomeScreen extends StatefulWidget {
   @override
-   _APHHomeScreenState  createState() =>  _APHHomeScreenState();
+  _APHHomeScreenState  createState() =>  _APHHomeScreenState();
 }
 
 class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> incidentes = [];
-  bool isLoading = true; // Indica si está cargando
+  bool isLoading = true;
   late AnimationController _animationController;
   int _currentPageIndex = 0;
   String? onTheWayCaseId;
+  List<String> helpRequestedCases = []; // IDs de casos con ayuda solicitada
+  Map<String, dynamic> brigadistaAssignments = {}; // Casos con brigadistas asignados
 
   @override
   void initState() {
@@ -34,31 +36,36 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
-    )..repeat(reverse: true); // Hace que la animación respire
+    )..repeat(reverse: true);
 
     _loadSelectedIncident();
     _loadIncidents();
 
     WebSocketService.newIncidentNotifier.addListener(() {
+      _loadSelectedIncident();
       _loadIncidents();
     });
   }
 
   Future<void> _loadSelectedIncident() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      onTheWayCaseId = prefs.getString('onTheWayCase');
-    });
+    if (mounted) {
+      setState(() {
+        onTheWayCaseId = prefs.getString('onTheWayCase');
+        helpRequestedCases = prefs.getStringList('helpRequestedCases') ?? [];
+        brigadistaAssignments = jsonDecode(prefs.getString('brigadistaAssignments') ?? '{}');
+      });
+    }
   }
 
   Future<void> _loadIncidents() async {
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     try {
       final url = await APIConstants.getAllReportsEndpoint();
-      print("Fetching reports from URL: $url");
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('jwt_token');
       if (token == null) {
@@ -73,9 +80,7 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
       final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
-        print("Response body: ${response.body}");
         List<dynamic> data = json.decode(response.body);
-
         if (mounted) {
           setState(() {
             incidentes = data.isNotEmpty
@@ -102,9 +107,11 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
         });
       }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -144,15 +151,19 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
                 scrollDirection: Axis.vertical,
                 itemCount: incidentes.length,
                 onPageChanged: (index) {
-                  setState(() {
-                    _currentPageIndex = index;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _currentPageIndex = index;
+                    });
+                  }
                 },
                 itemBuilder: (context, index) {
                   final report = incidentes[index];
                   final isSelected = report['id'] == onTheWayCaseId;
+                  final isAwaitingAssignment = helpRequestedCases.contains(report['id']);
+                  final isAssigned = brigadistaAssignments.containsKey(report['id']);
                   final color = isSelected ? basilTheme!.primary : basilTheme!.primaryContainer;
-                  final textColor = isSelected ? Colors.white : basilTheme!.onSurface;
+                  final textColor = isSelected ? Colors.white : basilTheme.onSurface;
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -165,6 +176,8 @@ class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProvider
                         prioridad: report['priority'],
                         prioridadColor: color,
                         textColor: textColor,
+                        isAwaitingAssignment: isAwaitingAssignment && !isAssigned,
+                        isAssigned: isAssigned,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -212,6 +225,8 @@ class InformeCard extends StatelessWidget {
   final String prioridad;
   final Color prioridadColor;
   final Color textColor;
+  final bool isAwaitingAssignment;
+  final bool isAssigned;
   final VoidCallback onTap;
 
   const InformeCard({
@@ -222,6 +237,8 @@ class InformeCard extends StatelessWidget {
     required this.prioridad,
     required this.prioridadColor,
     required this.textColor,
+    this.isAwaitingAssignment = false,
+    this.isAssigned = false,
     required this.onTap,
   });
 
@@ -241,41 +258,54 @@ class InformeCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nombre,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Ubicación: $ubicacion   Salón: $salon',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
+              Flexible(
+                  child:   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        descripcion,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor),
+                        nombre,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
                       ),
-                      const SizedBox(width: 20),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: textColor),
-                        ),
-
-                        child: Text(
-                          prioridad,
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor),
-                        ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Ubicación: $ubicacion   Salón: $salon',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            descripcion,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor),
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: textColor),
+                            ),
+                            child: Text(
+                              prioridad,
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(
+                              isAssigned
+                                  ? Icons.check_circle_rounded
+                                  : isAwaitingAssignment
+                                  ? Icons.hourglass_bottom_rounded
+                                  : null,
+                              color: textColor,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  )
-                ],
+                  ),
               ),
               Icon(
                 Icons.arrow_forward_ios_sharp,
@@ -289,4 +319,3 @@ class InformeCard extends StatelessWidget {
     );
   }
 }
-

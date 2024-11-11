@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -111,13 +112,50 @@ class WebSocketService {
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
 
+    socket!.on('Brigadista_case_assigned', (data) async {
+      print('Brigadista_case_assigned: $data');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Obtener el mapa actual de asignaciones de brigadistas
+      Map<String, dynamic> brigadistaAssignments = Map<String, dynamic>.from(
+          jsonDecode(prefs.getString('brigadistaAssignments') ?? '{}'));
+
+      // Agregar la nueva asignación al mapa
+      brigadistaAssignments[data['case_id']] = {
+        'names': data['names'],
+        'lastNames': data['lastNames'],
+        'phone_number': data['phone_number']
+      };
+
+      // Guardar el mapa actualizado en SharedPreferences
+      await prefs.setString('brigadistaAssignments', jsonEncode(brigadistaAssignments));
+
+      // Notificar cambios
+      WebSocketService.newIncidentNotifier.value = !WebSocketService.newIncidentNotifier.value;
+    });
+
+    socket!.on('Brigadista_case', (data) async {
+      print('Brigadista_case: $data');
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Convierte el objeto JSON en una cadena antes de guardarlo
+      String jsonData = jsonEncode(data);
+
+      await prefs.setString('Brigadista_case', jsonData);
+      newIncidentNotifier.value = !newIncidentNotifier.value;
+
+      // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
+    });
     socket!.on('Close_incident_broadcast', (data) async {
       print('Close_incident_broadcast: $data');
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('Close_incident_broadcast', data['Message']);
+      await prefs.setBool('Close_incident_broadcast', true);
       newIncidentNotifier.value = !newIncidentNotifier.value;
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
+
+
 
 
 
@@ -156,6 +194,18 @@ class WebSocketService {
     });
     newIncidentNotifier.value = !newIncidentNotifier.value;
   }
+
+  void AskForHelp_brigadier(Map<String, dynamic> reportData, Function(String) onMessageSent) {
+    socket?.emit('APH', reportData);
+    socket?.on('Aph_help_confirm', (data) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('Aph_help_confirm', data);
+      print(data);
+      onMessageSent(data);
+    });
+    newIncidentNotifier.value = !newIncidentNotifier.value;
+  }
+
 
   void disconnect() {
     socket?.disconnect();

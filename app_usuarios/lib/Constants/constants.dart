@@ -53,6 +53,16 @@ class APIConstants{
 
     return '$baseUrl/incidents/IncidentIdsById/$userID';
   }
+  static Future<String> getAllCloseReportsEndpoint() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userID = prefs.getString('userid');
+
+    if (userID == null) {
+      throw Exception("UserID not found in SharedPreferences.");
+    }
+
+    return '$baseUrl/emergency-reports/GetReportsClosedIdsById/$userID';
+  }
 }
 
 

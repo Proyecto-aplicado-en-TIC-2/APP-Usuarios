@@ -10,6 +10,13 @@ enum RelationshipWithTheUniversity {
   professor,
   visitor,
 }
+
+enum meansOfAttention {
+  InPlace,
+  Call,
+  App,
+  Otro,
+}
 enum Gender { Male, Female, Otro }
 enum EquipmentType {
   APOSITO_OCULAR, APOSITO_PQ, BAJALENGUA, BOLSAS_ROJAS, CATETER, ELECTRODOS,
@@ -134,6 +141,13 @@ String getDisplayName(dynamic item) {
       case RelationshipWithTheUniversity.professor: return 'Profesor';
       case RelationshipWithTheUniversity.universitary: return 'Unviersitario';
       case RelationshipWithTheUniversity.visitor: return 'Visitante';
+    }
+  }else if(item is meansOfAttention){
+    switch (item){
+      case meansOfAttention.App: return 'Aplicacion';
+      case meansOfAttention.Call: return 'llamada';
+      case meansOfAttention.InPlace: return 'Fisico';
+      case meansOfAttention.Otro: return 'Otros';
     }
   }
   return item.toString().split('.').last; // Valor por defecto si no hay nombre personalizado

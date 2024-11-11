@@ -1,5 +1,6 @@
 import 'package:appv2/APH/Incidentes.dart';
 import 'package:appv2/APH/InformePendiente.dart';
+import 'package:appv2/APH/SeeHistoryReportDetails.dart';
 import 'package:appv2/APH/aphome.dart';
 import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/Constants/AppColors.dart';
@@ -14,7 +15,7 @@ class InformesScreen extends StatelessWidget {
   Future<List<Map<String, dynamic>>> fetchReports() async {
     try {
       // Obtener la URL completa con el userID desde SharedPreferences
-      final url = await APIConstants.getAllReportsEndpoint();
+      final url = await APIConstants.getAllCloseReportsEndpoint();
       print("Fetching reports from URL: $url");  // Verificar la URL
 
       // Obtener el token de SharedPreferences
@@ -83,17 +84,17 @@ class InformesScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final report = reports[index];
                       return InformeCard(
-                        nombre: "${report['reporter']['names']}${report['reporter']['lastNames']}",
+                        nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
                         ubicacion: report['location']['block'],
                         salon: report['location']['classroom'].toString(),
                         descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
-                        prioridad: report['priority'],
-                        prioridadColor: report['priority'] == 'Alta' ? Colors.red : Colors.green,
+                        prioridad: 'si',
+                        prioridadColor: Colors.green,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => APHInformePendienteScreen(report: report),
+                              builder: (context) => SeeHistoryReportDetails(report: report),
                             ),
                           );
                         },
@@ -155,45 +156,47 @@ class InformeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nombre,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'Ubicación: $ubicacion   Salón: $salon',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
+                  Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            descripcion,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                            nombre,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                           ),
-                          const SizedBox(width: 20),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: basilTheme.onSurface),
-                            ),
-                            child: Text(
-                              prioridad,
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
-                            ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Ubicación: $ubicacion   Salón: $salon',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
                           ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Text(
+                                descripcion,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                              ),
+                              const SizedBox(width: 20),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: basilTheme.onSurface),
+                                ),
+                                child: Text(
+                                  prioridad,
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: basilTheme.onSurface),
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
+                      ),
                   ),
                   Icon(
                     Icons.arrow_forward_ios_sharp,
-                    color: basilTheme?.onSurface,
+                    color: basilTheme.onSurface,
                     size: 18,
                   ),
                 ],

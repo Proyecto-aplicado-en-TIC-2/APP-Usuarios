@@ -63,9 +63,9 @@ class _HomescreenState extends State<BrigaHomescreen> {
     bool? onTheWay = prefs.getBool('on_the_way');
     bool? APH_ok = prefs.getBool('APH_ok');
     String? Mensaje_Enviado = prefs.getString('Mensaje_Enviado');
-    String? Close_incident_broadcast = prefs.getString('Close_incident_broadcast');
+    bool? Close_incident_broadcast = prefs.getBool('Close_incident_broadcast');
 
-    if (Close_incident_broadcast != null && Close_incident_broadcast.isNotEmpty && mounted) {
+    if (Close_incident_broadcast == true) {
       print('cerrado');
       setState(() {
         _emergencyState = EmergencyState.closed;
@@ -73,7 +73,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
       await prefs.setBool('on_the_way', false);
       await prefs.setBool('APH_ok', false);
       await prefs.setString('Mensaje_Enviado', '');
-      await prefs.setString('Close_incident_broadcast', '');
+      await prefs.setBool('Close_incident_broadcast', false);
     } else if (Mensaje_Enviado != null && Mensaje_Enviado.isNotEmpty && mounted) {
       print('EmergencyState_1');
       setState(() {
@@ -112,7 +112,7 @@ class _HomescreenState extends State<BrigaHomescreen> {
               const EmergencyState_2(),
             if (_emergencyState == EmergencyState.inProgress)
               const EmergencyState_3(),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             const EmergencyLayout(),
             const SizedBox(height: 30),
             Text(

@@ -1,3 +1,4 @@
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/APH/Informes.dart';
 import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/Button.dart';
@@ -22,7 +23,9 @@ class APHInformePendienteScreen extends StatefulWidget {
 }
 
 class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
-
+  bool followUpChecked = false; // Estado del checkbox
+  bool secureLiteUpChecked = false;
+  final WebSocketService _webSocketService = WebSocketService();
   final TextEditingController hourArriveController = TextEditingController();
   //patient
   final TextEditingController namesController = TextEditingController();
@@ -60,6 +63,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
 
   @override
   void dispose() {
+    hourArriveController.dispose();
     namesController.dispose();
     lastNamesController.dispose();
     typeDocumentController.dispose();
@@ -87,6 +91,28 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
     super.dispose();
   }
 
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      setState(() {
+        callHourController.text = pickedTime.format(context);
+      });
+    }
+  }
+  Future<void> _selectTime_2(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      setState(() {
+        hourArriveController.text = pickedTime.format(context);
+      });
+    }
+  }
   void _closeReport() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userid');
@@ -100,7 +126,6 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
         "hourArrive": hourArriveController.text,
         "close_case": "true",
         "on_the_way": "false",
-        "classificationAttention": "",
         "patient": {
           "names": namesController.text,
           "lastNames": lastNamesController.text,
@@ -123,7 +148,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
           "sentTo": sentToController.text,
           "diagnosticImpression": diagnosticImpressionController.text,
           "treatment": treatmentController.text,
-          "followUp": followUpController.text
+          "followUp": followUpChecked // Guardar el valor del checkbox
         },
         "attendnt": {
           "callHour": callHourController.text,
@@ -137,24 +162,23 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
         "noteForFollowUp": noteForFollowUpController.text
       };
 
-      WebSocketService().closeReport(reportData, (String confirmationMessage) {
-        // Muestra el SnackBar antes de redirigir a InformesScreen
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Informe cerrado y enviado con éxito.')),
-        );
-
-        // Redirige a InformesScreen después de un breve retraso
-        Future.delayed(Duration(milliseconds: 500), () {
+      _webSocketService.closeReport(reportData, (String confirmationMessage) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Informe cerrado y enviado con éxito.')),
+          );
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => InformesScreen()),
+            MaterialPageRoute(builder: (context) => CustomBottomNavigation(initialIndex: 1)),
                 (Route<dynamic> route) => false,
           );
-        });
+        }
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("No se encontró el ID de usuario. Intente nuevamente.")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No se encontró el ID de usuario. Intente nuevamente.")),
+        );
+      }
     }
   }
 
@@ -245,7 +269,169 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 30),
+            BuildDropdownField<meansOfAttention>(
+                topLabel: 'Medios de atencion',
+                bottomHelperText: '',
+                items: meansOfAttention.values,
+                controller: meansOfAttentionController
+            ),
+            Box(
+                topLabel: 'Informacion inicial',
+                bottomHelperText: '',
+                controller: startedInformationController,
+                inputType:  TextInputType.text
+            ),
+            Row(
+              children: [
+                Checkbox(
+                  value: secureLiteUpChecked,
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      secureLiteUpChecked = newValue ?? false;
+                    });
+                  },
+                ),
+                Text(
+                  "Linea segura",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Evaluacion',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 30),
+            GestureDetector(
+              onTap: () => _selectTime_2(context),
+              child: AbsorbPointer(
+                child: Box(
+                  topLabel: 'Hora de llegada del APH',
+                  bottomHelperText: '',
+                  controller: hourArriveController,
+                  inputType: TextInputType.text,
+                ),
+              ),
+            ),
+            Box(
+                topLabel: 'Rason de la consulta',
+                bottomHelperText: '',
+                controller: reasonForConsultationController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Enfermedad',
+                bottomHelperText: '',
+                controller: diseaseController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Examen fisico',
+                bottomHelperText: '',
+                controller: physicalExamController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Antecedentes personales',
+                bottomHelperText: '',
+                controller: recordController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Remitido A',
+                bottomHelperText: '',
+                controller: sentToController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Impresion diagnostica',
+                bottomHelperText: '',
+                controller: diagnosticImpressionController,
+                inputType:  TextInputType.text
+            ),
+            Box(
+                topLabel: 'Tratamiento',
+                bottomHelperText: '',
+                controller: treatmentController,
+                inputType:  TextInputType.text
+            ),
+            Row(
+              children: [
+                Checkbox(
+                  value: followUpChecked,
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      followUpChecked = newValue ?? false;
+                    });
+                  },
+                ),
+                Text(
+                  "Requiere seguimiento",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Acudiente',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 30),
+            GestureDetector(
+              onTap: () => _selectTime(context),
+              child: AbsorbPointer(
+                child: Box(
+                  topLabel: 'Hora de la llamada',
+                  bottomHelperText: '',
+                  controller: callHourController,
+                  inputType: TextInputType.text,
+                ),
+              ),
+            ),
+            Box(
+                topLabel: 'Nombre del acudiente',
+                bottomHelperText: '',
+                controller: callAttendntNameController,
+                inputType:  TextInputType.text
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Equipamiento',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+            ),
+            const SizedBox(height: 30),
+            Card(
+              color: basilTheme?.primaryContainer,
+            elevation: 3,
+            child: Padding(
 
+              padding:  const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Box(
+                      topLabel: 'Cantidad',
+                      bottomHelperText: '',
+                      controller: quantityController,
+                      inputType:  TextInputType.text
+                  ),
+                  BuildDropdownField<EquipmentType>(
+                      topLabel: 'Tipo',
+                      bottomHelperText: '',
+                      items: EquipmentType.values,
+                      controller: typeController
+                  ),
+                  BuildDropdownField<EquipmentSource>(
+                      topLabel: 'Fuente del equipamiento',
+                      bottomHelperText: '',
+                      items: EquipmentSource.values,
+                      controller: sourceController
+                  ),
+                ],
+              ),
+            ),
+            ),
+          SizedBox(height: 30,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -255,7 +441,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
               ),
               Button(text: 'Completar',
                   width: 157,
-                  onClick: () => _closeReport
+                  onClick: () => _closeReport()
               ),
             ],
           )
