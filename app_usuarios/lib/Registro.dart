@@ -43,8 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String password = passwordController.text;
     final String phone = phoneController.text.trim();
 
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty ||
-        relationshipWithTheUniversity.isNotEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
       );
@@ -67,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'last_names': lastName,
             'mail': email,
             'phone_number': phone,
-            'relationship_with_the_university': relationshipWithTheUniversity
+            'relationshipWithTheUniversity': relationshipWithTheUniversity
           },
         }),
       );
@@ -84,18 +83,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final String phone_number = responseData['phone_number'] ?? 'Sin asignar';
         final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ?? 'Sin asignar';
 
-        final String idUniversity = responseData['userDetails']?['idUniversity']?.toString() ?? 'Sin asignar';
-        final String documentType = responseData['userDetails']?['documentType'] ?? 'Sin asignar';
-        final String documentNumber = responseData['userDetails']?['documentNumber'] ?? 'Sin asignar';
-        final String address = responseData['userDetails']?['address'] ?? 'Sin asignar';
-        final String emergencyContactPhoneNumber = responseData['userDetails']?['emergencyContactPhoneNumber']?.toString() ?? '';
-        final String birthday = responseData['userDetails']?['birthday'] ?? 'Sin asignar';
-        final String bloodType = responseData['userDetails']?['bloodType'] ?? 'Sin asignar';
-        final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
-        final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
-        final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
-        final bool in_service = responseData['in_service'] ?? false;
-        final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
@@ -113,18 +100,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await prefs.setString('mail', mail);
         await prefs.setString('phone_number', phone_number);
 
-        await prefs.setString('idUniversity', idUniversity);
-        await prefs.setString('documentType', documentType);
-        await prefs.setString('documentNumber', documentNumber);
-        await prefs.setString('address', address);
-        await prefs.setString('emergencyContactPhoneNumber', emergencyContactPhoneNumber);
-        await prefs.setString('birthday', birthday);
-        await prefs.setString('bloodType', bloodType);
-        await prefs.setString('allergies', allergies);
-        await prefs.setString('dependentMedications', dependentMedications);
-        await prefs.setString('disabilities', disabilities);
-        await prefs.setBool('in_service', in_service);
-        await prefs.setString('quadrant', quadrant);
 
         final webSocketService = WebSocketService();
         await webSocketService.connect();
