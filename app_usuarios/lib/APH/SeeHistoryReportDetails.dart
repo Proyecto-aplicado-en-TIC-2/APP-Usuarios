@@ -58,12 +58,12 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.report['reporter']['names'] + widget.report['reporter']['lastNames'],
+                    widget.report['reporter']['names'] ?? 'N/A' + widget.report['reporter']['lastNames'] ?? 'N/A',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(color: basilTheme?.onSurface),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.report['reporter']['relationshipWithTheUniversity'],
+                    widget.report['reporter']['relationshipWithTheUniversity'] ?? 'N/A',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
                   ),
                 ],
@@ -77,37 +77,37 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
             const SizedBox(height: 30),
             buildInfoRow(
                 'Nombres',
-                widget.report['patient']['names'],
+                widget.report['patient']['names']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Apellidos',
-                widget.report['patient']['lastNames'],
+                widget.report['patient']['lastNames']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Tipo de documetno',
-                widget.report['patient']['typeDocument'],
+                widget.report['patient']['typeDocument']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Numero de documento',
-                widget.report['patient']['numberOfDocument'],
+                widget.report['patient']['numberOfDocument']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Genero',
-                widget.report['patient']['gender'],
+                widget.report['patient']['gender'] ?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Edad',
-                widget.report['patient']['age'],
+                widget.report['patient']['age']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Relacion con la universidad',
-                widget.report['patient']['relationshipWithTheUniversity'],
+                widget.report['patient']['relationshipWithTheUniversity']?? 'N/A',
                 context
             ),
             const SizedBox(height: 30),
@@ -118,17 +118,17 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
             const SizedBox(height: 30),
             buildInfoRow(
                 'Contacto por linea segura',
-                widget.report['contact']['attentionForSecureLine'],
+                widget.report['contact']['attentionForSecureLine'].toString(),
                 context
             ),
             buildInfoRow(
                 'Medios de atencion',
-                widget.report['contact']['meansOfAttention'],
+                widget.report['contact']['meansOfAttention']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Informacion inicial',
-                widget.report['contact']['startedInformation'],
+                widget.report['contact']['startedInformation']?? 'N/A',
                 context
             ),
             const SizedBox(height: 30),
@@ -139,42 +139,42 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
             const SizedBox(height: 30),
             buildInfoRow(
                 'Rason de la consulta',
-                widget.report['evaluation']['reasonForConsultation'],
+                widget.report['evaluation']['reasonForConsultation']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Enfermedad',
-                widget.report['evaluation']['disease'],
+                widget.report['evaluation']['disease']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Examen fisico',
-                widget.report['evaluation']['physicalExam'],
+                widget.report['evaluation']['physicalExam']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Antecedentes personales',
-                widget.report['evaluation']['record'],
+                widget.report['evaluation']['record']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Remitido A',
-                widget.report['evaluation']['sentTo'],
+                widget.report['evaluation']['sentTo']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Impresion diagnostica',
-                widget.report['evaluation']['diagnosticImpression'],
+                widget.report['evaluation']['diagnosticImpression']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Tratamiento',
-                widget.report['evaluation']['treatment'],
+                widget.report['evaluation']['treatment']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Seguimiento',
-                widget.report['evaluation']['followUp'],
+                widget.report['evaluation']['followUp'].toString(),
                 context
             ),
 
@@ -186,12 +186,12 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
             const SizedBox(height: 30),
             buildInfoRow(
                 'Hora de la llamada',
-                widget.report['attendnt']['callHour'],
+                widget.report['attendnt']['callHour']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Nombre del acudiente',
-                widget.report['attendnt']['callAttendntName'],
+                widget.report['attendnt']['callAttendntName']?? 'N/A',
                 context
             ),
             const SizedBox(height: 30),
@@ -203,17 +203,17 @@ class _SeeHistoryReportDetailsState extends State<SeeHistoryReportDetails> {
 
             buildInfoRow(
                 'Cantidad',
-                widget.report['equipment']['quantity'],
+                widget.report['equipment']['quantity']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Tipo',
-                widget.report['equipment']['type'],
+                widget.report['equipment']['type']?? 'N/A',
                 context
             ),
             buildInfoRow(
                 'Fuente del equipamiento',
-                widget.report['equipment']['source'],
+                widget.report['equipment']['source']?? 'N/A',
                 context
             ),
             const SizedBox(height: 30,),

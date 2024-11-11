@@ -204,12 +204,12 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.report['reporter']['names'] + widget.report['reporter']['lastNames'],
+                    widget.report['reporter']['names'] + widget.report['reporter']['lastNames']?? 'N/A',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(color: basilTheme?.onSurface),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.report['reporter']['relationshipWithTheUniversity'],
+                    widget.report['reporter']['relationshipWithTheUniversity'] ?? 'N/A',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(color: basilTheme?.onSurface),
                   ),
                 ],

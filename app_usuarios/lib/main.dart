@@ -101,6 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
           final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
           final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
           final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
+          final bool in_service = responseData['in_service'] ?? 'Sin asignar';
+          final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);
@@ -131,6 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('allergies', allergies);
           await prefs.setString('dependentMedications', dependentMedications);
           await prefs.setString('disabilities', disabilities);
+          await prefs.setBool('in_service', in_service);
+          await prefs.setString('quadrant', quadrant);
 
           final webSocketService = WebSocketService();
           await webSocketService.connect();

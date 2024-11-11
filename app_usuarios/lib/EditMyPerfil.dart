@@ -60,6 +60,8 @@ class _EditMyPerfil extends State<EditMyPerfil> {
   String allergies = 'Error' ;
   String dependentMedications = 'Error';
   String disabilities = 'Error';
+  bool in_service = false;
+  String quadrant = 'Error';
 
   @override
   void initState() {
@@ -90,6 +92,10 @@ class _EditMyPerfil extends State<EditMyPerfil> {
       allergies = prefs.getString('allergies') ?? 'Sin asignar';
       dependentMedications = prefs.getString('dependentMedications') ?? 'Sin asignar';
       disabilities = prefs.getString('disabilities') ?? 'Sin asignar';
+
+      in_service = prefs.getBool('in_service') ?? false;
+      quadrant = prefs.getString('quadrant') ?? 'Sin asignar';
+
     });
   }
 
@@ -125,6 +131,8 @@ class _EditMyPerfil extends State<EditMyPerfil> {
           "mail": mailController.text.isNotEmpty ? mailController.text : mail,
           "phone_number": phoneController.text.isNotEmpty ? phoneController.text : phone,
           "relationshipWithTheUniversity": relationshipWithTheUniversity,
+          "in_service" : in_service,
+          "quadrant" : quadrant,
           "userDetails": {
             "idUniversity": idUniversityController.text.isNotEmpty ? idUniversityController.text : idUniversity,
             "documentType": documentTypeController.text.isNotEmpty ? documentTypeController.text : documentType,

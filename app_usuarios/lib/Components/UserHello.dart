@@ -51,6 +51,8 @@ class _HomescreenState extends State<UserHello> {
     super.dispose();
   }
 
+
+
   Future<void> _closeCase() async {
 
     if (!mounted) return; // Asegúrate de que el widget esté en el árbol
@@ -63,6 +65,7 @@ class _HomescreenState extends State<UserHello> {
       });
     }
   }
+
 
   Future<void> _setEmergency() async {
     print('_setEmergency');
