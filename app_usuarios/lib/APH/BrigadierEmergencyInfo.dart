@@ -14,19 +14,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../MiPerfil.dart';
 import 'package:http/http.dart' as http;
 
-class APHPrioridadAltaScreen extends StatefulWidget {
+class BrigadierEmergencyInfo extends StatefulWidget {
   final Map<String, dynamic> incidentData;
 
-  const APHPrioridadAltaScreen({
+  const BrigadierEmergencyInfo({
     Key? key,
     required this.incidentData,
   }) : super(key: key);
 
   @override
-  _APHPrioridadAltaScreenState createState() => _APHPrioridadAltaScreenState();
+  _BrigadierEmergencyInfoState createState() => _BrigadierEmergencyInfoState();
 }
 
-class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
+class _BrigadierEmergencyInfoState extends State<BrigadierEmergencyInfo> {
   final WebSocketService _webSocketService = WebSocketService();
   String idUPB = 'N/A';
   String emergencyContactPhoneNumber = 'N/A';
@@ -44,78 +44,8 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
       _loadUserData();
     }
   }
-  Future<void> _askForHelpBrigadier() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userId = await prefs.getString('userid');
-      String caseId = widget.incidentData['id'];
-      await prefs.setString('onTheWayCase', caseId);
 
-      // Guarda el estado de ayuda solicitada junto con el ID del caso
-      List<String> helpRequestedCases = prefs.getStringList('helpRequestedCases') ?? [];
-      if (!helpRequestedCases.contains(caseId)) {
-        helpRequestedCases.add(caseId);
-        await prefs.setStringList('helpRequestedCases', helpRequestedCases);
-      }
 
-      final reportData = {
-        "help": {
-          "user_id": userId,
-          "case_id": caseId,
-          "partition_key": widget.incidentData['partition_key']
-        },
-        "close_case": "false",
-        "on_the_way": "false"
-      };
-
-      _webSocketService.AskForHelp_brigadier(reportData, (String serverResponse) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(serverResponse)),
-          );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0)),
-                (Route<dynamic> route) => false,
-          );
-        }
-      });
-    } catch (e) {
-      print('Failed to request help for brigadier: $e');
-    }
-  }
-
-  Future<void> _onTheWay() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userid = await prefs.getString('userid');
-      await prefs.setString('onTheWayCase', widget.incidentData['id']);
-      await prefs.setBool('awaitingBrigadierAssignment', false);
-
-      final reportData = {
-        "help": {
-          "user_id": userid,
-          "case_id": widget.incidentData['id'],
-          "partition_key": widget.incidentData['partition_key']
-        },
-        "close_case": "false",
-        "on_the_way": "true"
-      };
-
-        _webSocketService.onTheWay(reportData, (String serverResponse) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(serverResponse)),
-            );
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0)),
-                  (Route<dynamic> route) => false,
-            );
-          }
-        });
-    } catch (e) {
-      print('Failed on the way: $e');
-    }
-  }
 
   @override
   void dispose() {
@@ -206,7 +136,7 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
       appBar: const CustonAppbar(automaticallyImplyLeading: true),
       body: Center(
         child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child:  isLoading
               ? const Center(child: CircularProgressIndicator())
               : Column(
@@ -289,19 +219,9 @@ class _APHPrioridadAltaScreenState extends State<APHPrioridadAltaScreen> {
                   bloodType,
                   context),
               const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  CallButton(phone: phone_number),
-                  Button(text: 'En camino',
-                      width: 155,
-                      onClick: () => _onTheWay())
-                ],
-              ),
-              const SizedBox(height: 10,),
               Center(
-                  child: CustonOutlinedButton(text: 'Pedir ayuda a un BRIGADISTA',
-                      onPressed: () => _askForHelpBrigadier(),
+                  child: CustonOutlinedButton(text: 'Volver',
+                      onPressed: () => Navigator.pop(context),
                       width: 220)
               )
             ],

@@ -1,13 +1,17 @@
 import 'dart:convert';
 
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/Brigadistas/BrigaHome.dart';
 import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/CustonAppbarProfile.dart';
 import 'package:appv2/Components/CustonOutlinedButton.dart';
 import 'package:appv2/Components/buildDropdownField.dart';
 import 'package:appv2/Components/enums.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
+import 'package:appv2/MiPerfil.dart';
 import 'package:appv2/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,6 +64,8 @@ class _EditMyPerfil extends State<EditMyPerfil> {
   String allergies = 'Error' ;
   String dependentMedications = 'Error';
   String disabilities = 'Error';
+  bool in_service = false;
+  String quadrant = 'Error';
 
   @override
   void initState() {
@@ -90,9 +96,26 @@ class _EditMyPerfil extends State<EditMyPerfil> {
       allergies = prefs.getString('allergies') ?? 'Sin asignar';
       dependentMedications = prefs.getString('dependentMedications') ?? 'Sin asignar';
       disabilities = prefs.getString('disabilities') ?? 'Sin asignar';
+
+      in_service = prefs.getBool('in_service') ?? false;
+      quadrant = prefs.getString('quadrant') ?? 'Sin asignar';
+
     });
   }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
 
+    if (pickedDate != null) {
+      setState(() {
+        birthdayController.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
   Future<void> _SaveUserDetails() async {
     setState(() {
       isLoading = true;
@@ -125,6 +148,8 @@ class _EditMyPerfil extends State<EditMyPerfil> {
           "mail": mailController.text.isNotEmpty ? mailController.text : mail,
           "phone_number": phoneController.text.isNotEmpty ? phoneController.text : phone,
           "relationshipWithTheUniversity": relationshipWithTheUniversity,
+          "in_service" : in_service,
+          "quadrant" : quadrant,
           "userDetails": {
             "idUniversity": idUniversityController.text.isNotEmpty ? idUniversityController.text : idUniversity,
             "documentType": documentTypeController.text.isNotEmpty ? documentTypeController.text : documentType,
@@ -159,11 +184,21 @@ class _EditMyPerfil extends State<EditMyPerfil> {
 
         // Mostrar SnackBar de éxito
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Operación exitosa')),
+          const SnackBar(content: Text('Operacn exitosa')),
         );
-
+        String? roles_partition_key =  prefs.getString('roles_partition_key');
         // Regresar a la pantalla anterior después de que se complete la operación
-        Navigator.pop(context);
+        if (roles_partition_key == 'prehospital_care_accounts') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0,)),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) =>  const BrigaHomescreen()),
+          );
+        }
       } else {
         throw Exception('Error en la operación. Código de estado: ${response.statusCode}');
       }
@@ -203,7 +238,7 @@ class _EditMyPerfil extends State<EditMyPerfil> {
   Widget build(BuildContext context) {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-        appBar: const CustonAppbar(automaticallyImplyLeading: true),
+        appBar: const CustonAppbarProfile(automaticallyImplyLeading: true),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: isLoading
@@ -281,6 +316,11 @@ class _EditMyPerfil extends State<EditMyPerfil> {
                               controller: documentNumberController,
                               inputType: TextInputType.number
                           ),
+                          Box(topLabel: 'Id universitarian (carned)',
+                              bottomHelperText: idUniversity,
+                              controller: idUniversityController,
+                              inputType: TextInputType.emailAddress
+                          ),
                           Box(topLabel: 'Numero de teléfono',
                               bottomHelperText: phone,
                               controller: phoneController,
@@ -296,10 +336,16 @@ class _EditMyPerfil extends State<EditMyPerfil> {
                               controller: emergencyContactPhoneNumberController,
                               inputType: TextInputType.phone
                           ),
-                          Box(topLabel: 'Fecha de nacimiento',
-                              bottomHelperText: birthday,
-                              controller: birthdayController,
-                              inputType: TextInputType.datetime
+                          GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: AbsorbPointer(
+                              child: Box(
+                                topLabel: 'Fecha de nacimiento',
+                                bottomHelperText: birthday,
+                                controller: birthdayController,
+                                inputType: TextInputType.datetime,
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 30,),
                           Text('Información medica ',

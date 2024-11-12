@@ -23,7 +23,7 @@ class CallButton extends StatelessWidget {
   Widget build(BuildContext context) {
   final basilTheme = Theme.of(context).extension<BasilTheme>();
     return FilledButton(
-      onPressed: () => _makePhoneCall('+57$phone'),
+      onPressed: () => _makePhoneCall(phone),
       style: ElevatedButton.styleFrom(
         backgroundColor: basilTheme?.primary,
         shape: RoundedRectangleBorder(

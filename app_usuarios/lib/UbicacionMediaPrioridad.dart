@@ -1,3 +1,4 @@
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
@@ -8,6 +9,7 @@ import 'package:appv2/websocket_service.dart';
 import 'package:appv2/Brigadistas/BrigaHome.dart';
 import 'package:flutter/material.dart';
 import 'package:appv2/Components/enums.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UbicacionMediaprioridadScreen extends StatefulWidget {
   final String priority;
@@ -63,15 +65,24 @@ class _UbicacionMediaprioridadScreenState extends State<UbicacionMediaprioridadS
         }
       };
 
-      _webSocketService.sendReport(reportData, (String serverResponse) {
+      _webSocketService.sendReport(reportData, (String serverResponse) async {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(serverResponse))
         );
-
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
-              (Route<dynamic> route) => false,
-        );
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String? roles =  prefs.getString('roles_partition_key');
+        print(roles);
+        if(roles == 'prehospital_care_accounts') {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => CustomBottomNavigation(initialIndex: 0)),
+                (Route<dynamic> route) => false,
+          );
+        }else{
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const BrigaHomescreen()),
+                  (Route<dynamic> route) => false,
+          );
+        }
       });
     }catch(e){
       ScaffoldMessenger.of(context).showSnackBar(

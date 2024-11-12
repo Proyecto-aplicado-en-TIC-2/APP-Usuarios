@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
+import 'package:appv2/Components/CustonAppbarProfile.dart';
 import 'package:appv2/Components/CustonOutlinedButton.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
@@ -77,7 +78,7 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
   Widget build(BuildContext context) {
     final basilTheme = Theme.of(context).extension<BasilTheme>();
     return Scaffold(
-        appBar: const CustonAppbar(automaticallyImplyLeading: true),
+        appBar: const CustonAppbarProfile(automaticallyImplyLeading: true),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -206,6 +207,21 @@ class _MiPerfilScreenState extends State<MiPerfilScreen> {
                                 ?.copyWith(color: basilTheme?.onSurface),
                           ),
                           Text(documentNumber,
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(color: basilTheme?.onSurface),
+                          ),
+                          const SizedBox(height: 10),
+                          Text('Id Universitaria (carned)',
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(color: basilTheme?.onSurface),
+                          ),
+                          Text(idUniversity,
                             style: Theme
                                 .of(context)
                                 .textTheme

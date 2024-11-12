@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "839913793064",
+    "project_id": "gdrupb-c868f",
+    "storage_bucket": "gdrupb-c868f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839913793064:android:86181e923cb257bac3371d",
+        "android_client_info": {
+          "package_name": "com.gdrUpb.GestionDeRiesgosUPB"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLkyEbFZe5C00nr7YndxtlWKfGjv56hGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

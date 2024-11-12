@@ -1,5 +1,6 @@
 import 'package:appv2/APH/Incidentes.dart';
 import 'package:appv2/APH/InformePendiente.dart';
+import 'package:appv2/APH/SeeHistoryReportDetails.dart';
 import 'package:appv2/APH/aphome.dart';
 import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/Constants/AppColors.dart';
@@ -14,7 +15,7 @@ class InformesScreen extends StatelessWidget {
   Future<List<Map<String, dynamic>>> fetchReports() async {
     try {
       // Obtener la URL completa con el userID desde SharedPreferences
-      final url = await APIConstants.getAllReportsEndpoint();
+      final url = await APIConstants.getAllCloseReportsEndpoint();
       print("Fetching reports from URL: $url");  // Verificar la URL
 
       // Obtener el token de SharedPreferences
@@ -62,7 +63,7 @@ class InformesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
              Text(
-              'Informes pendientes',
+              '  Historial de Informes',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 10),
@@ -73,11 +74,10 @@ class InformesScreen extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading reports'));
+                    return const Center(child: Text('Error cargando el historial de informes'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No reports available'));
+                    return const Center(child: Text('No tiene un historico de reportes'));
                   }
-
                   final reports = snapshot.data!;
                   return ListView.builder(
                     itemCount: reports.length,
@@ -88,16 +88,19 @@ class InformesScreen extends StatelessWidget {
                         ubicacion: report['location']['block'],
                         salon: report['location']['classroom'].toString(),
                         descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
-                        prioridad: report['priority'],
-                        prioridadColor: report['priority'] == 'Alta' ? Colors.red : Colors.green,
+                        prioridad: report['classificationAttention'],
+                        prioridadColor: Colors.green,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => APHInformePendienteScreen(report: report),
+                              builder: (context) => SeeHistoryReportDetails(report: report),
                             ),
                           );
-                        },
+                        }, date: report['date']['date'],
+                        hourRequest: report['date']['hourRequest'],
+                        hourArrive: report['date']['hourArrive'],
+                        hourCloseAttentionn: report['date']['hourCloseAttentionn'],
                       );
                     },
                   );
@@ -105,11 +108,6 @@ class InformesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            Text(
-              'Historial de Informes',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
-            ),
-            const SizedBox(height: 10),
             // Puedes agregar las tarjetas de historial aquí
           ],
         ),
@@ -127,6 +125,10 @@ class InformeCard extends StatelessWidget {
   final String prioridad;
   final Color prioridadColor;
   final VoidCallback onTap;
+  final String date;
+  final String hourRequest;
+  final String hourArrive;
+  final String hourCloseAttentionn;
 
   const InformeCard({
     required this.nombre,
@@ -136,62 +138,115 @@ class InformeCard extends StatelessWidget {
     required this.prioridad,
     required this.prioridadColor,
     required this.onTap,
+    required this.date,
+    required this.hourRequest,
+    required this.hourArrive,
+    required this.hourCloseAttentionn,
   });
 
   @override
   Widget build(BuildContext context) {
+    final basilTheme = Theme.of(context).extension<BasilTheme>();
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              nombre,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        children: [
+          Card(
+            elevation: 3, // Elevación de la tarjeta
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(height: 5),
-            Text(
-              'Ubicación: $ubicacion  Salón: $salon',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              descripcion,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Container(
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: prioridadColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: basilTheme!.onSurface),
               ),
-              child: Text(
-                prioridad,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: prioridadColor,
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nombre,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Ubicación: $ubicacion   Salón: $salon',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: basilTheme?.onSurface),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Text(
+                                descripcion,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme?.onSurface),
+                              ),
+                              const SizedBox(width: 20),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: basilTheme.onSurface),
+                                ),
+                                child: Text(
+                                    prioridad
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            'Fecha de la incideancia',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              date,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora de la solicitud',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourRequest,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora en que la solicitud fue aceptada',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourArrive,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                          Text(
+                            'Hora en la que se cerro el incidente',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                          ),
+                            Text(
+                              hourCloseAttentionn,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: basilTheme.onSurface),
+                            ),
+                        ],
+                      ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_sharp,
+                    color: basilTheme.onSurface,
+                    size: 18,
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10), // Espacio entre cada informe
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:appv2/Components/CustonAppbar.dart';
 import 'package:appv2/APH/CustonBottomNavigationBar.dart';
 import 'package:appv2/Components/EmergencyCallbox.dart';
 import 'package:appv2/Components/UserHello.dart';
+import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/websocket_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,52 +14,118 @@ import 'Informes.dart';
 import '../MiPerfil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class APHHomeScreen extends StatefulWidget {
   @override
-  _APHHomeScreenState createState() => _APHHomeScreenState();
+  _APHHomeScreenState  createState() =>  _APHHomeScreenState();
 }
 
-class _APHHomeScreenState extends State<APHHomeScreen> {
+class _APHHomeScreenState extends State<APHHomeScreen> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> incidentes = [];
+  bool isLoading = true;
+  late AnimationController _animationController;
+  int _currentPageIndex = 0;
+  String? onTheWayCaseId;
+  List<String> helpRequestedCases = []; // IDs de casos con ayuda solicitada
+  Map<String, dynamic> brigadistaAssignments = {}; // Casos con brigadistas asignados
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _loadSelectedIncident();
     _loadIncidents();
 
-    // Escuchar cambios en el ValueNotifier del Singleton
     WebSocketService.newIncidentNotifier.addListener(() {
+      _loadSelectedIncident();
       _loadIncidents();
     });
   }
 
-
-  // Método para cargar incidentes desde SharedPreferences
-  Future<void> _loadIncidents() async {
+  Future<void> _loadSelectedIncident() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys();
+    if (mounted) {
+      setState(() {
+        onTheWayCaseId = prefs.getString('onTheWayCase');
+        helpRequestedCases = prefs.getStringList('helpRequestedCases') ?? [];
+        brigadistaAssignments = jsonDecode(prefs.getString('brigadistaAssignments') ?? '{}');
+      });
+    }
+  }
 
-    List<Map<String, dynamic>> loadedIncidents = [];
-    for (String key in keys) {
-      final String? incidentData = prefs.getString(key);
+  Future<void> _loadIncidents() async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    try {
+      final url = await APIConstants.getAllReportsEndpoint();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+      if (token == null) {
+        throw Exception("Access token not found in SharedPreferences.");
+      }
 
-      if (incidentData != null) {
-        try {
-          final incidentMap = jsonDecode(incidentData);
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      };
 
-          if (incidentMap is Map<String, dynamic> && incidentMap['message'] != null && incidentMap['Lugar'] != null) {
-            loadedIncidents.add(incidentMap);
-          }
-        } catch (e) {
-          print('Error al decodificar JSON para la clave $key: $e');
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            incidentes = data.isNotEmpty
+                ? data.map((item) => item as Map<String, dynamic>).toList()
+                : [];
+
+            incidentes.sort((a, b) {
+              if (a['id'] == onTheWayCaseId) return -1;
+              if (b['id'] == onTheWayCaseId) return 1;
+
+              const prioridadOrden = {'Alta': 1, 'Media': 2, 'Baja': 3};
+              return (prioridadOrden[a['priority']] ?? 3).compareTo(prioridadOrden[b['priority']] ?? 3);
+            });
+          });
         }
+      } else {
+        throw Exception('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Failed to load reports: $e');
+      if (mounted) {
+        setState(() {
+          incidentes = [];
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
+  }
 
-    setState(() {
-      incidentes = loadedIncidents;
+  @override
+  void dispose() {
+    _loadSelectedIncident();
+    _loadIncidents();
+    WebSocketService.newIncidentNotifier.removeListener(() {
+      _loadIncidents();
+      _loadSelectedIncident();
+
     });
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -71,8 +138,7 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-          [
+          children: [
             const UserHello(),
             const SizedBox(height: 30),
             Text(
@@ -81,33 +147,73 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : incidentes.isEmpty
+                  ? const Center(child: Text('No tiene incidencias asignadas'))
+                  : PageView.builder(
+                scrollDirection: Axis.vertical,
                 itemCount: incidentes.length,
-                itemBuilder: (context, index) {
-                  final incident = incidentes[index];
-                  String prioridad = incident['Priorty'] ?? 'Alta';
-                  Color prioridadColor;
-                  // Determina el color de la prioridad
-                  switch (prioridad.toLowerCase()) {
-                    case 'Media':
-                      prioridadColor = Colors.orangeAccent;
-                      break;
-                    case 'Baja':
-                      prioridadColor = Colors.green;
-                      break;
-                    default:
-                      prioridadColor = Colors.red;
+                onPageChanged: (index) {
+                  if (mounted) {
+                    setState(() {
+                      _currentPageIndex = index;
+                    });
                   }
+                },
+                itemBuilder: (context, index) {
+                  final report = incidentes[index];
+                  final isSelected = report['id'] == onTheWayCaseId;
+                  final isAwaitingAssignment = helpRequestedCases.contains(report['id']);
+                  final isAssigned = brigadistaAssignments.containsKey(report['id']);
+                  final color = isSelected ? basilTheme!.primary : basilTheme!.primaryContainer;
+                  final textColor = isSelected ? Colors.white : basilTheme.onSurface;
+
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InformeCard(
+                          nombre: "${report['reporter']['names']} ${report['reporter']['lastNames']}",
+                          ubicacion: report['location']['block'],
+                          salon: report['location']['classroom'].toString(),
+                          descripcion: report['location']['pointOfReference'] ?? 'Sin descripción',
+                          prioridad: report['priority'],
+                          prioridadColor: color,
+                          textColor: textColor,
+                          isAwaitingAssignment: isAwaitingAssignment && !isAssigned,
+                          isAssigned: isAssigned,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => APHPrioridadAltaScreen(incidentData: report),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        ScaleTransition(
+                          scale: Tween(begin: 1.0, end: 1.2).animate(_animationController),
+                          child: Icon(
+                            _currentPageIndex == incidentes.length - 1
+                                ? Icons.arrow_drop_up_rounded
+                                : Icons.arrow_drop_down_rounded,
+                            color: basilTheme.onSurfaceVariant,
+                            size: 38,
+                          ),
+                        ),
+                      ],
+                  );
                 },
               ),
             ),
-            const SizedBox(height: 30),
+
             Text(
               'Llamada de emergencia',
-              style:  Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: basilTheme?.onSurface),
             ),
             const SizedBox(height: 30),
-            const CallCentral()
+            const CallCentral(),
           ],
         ),
       ),
@@ -115,3 +221,105 @@ class _APHHomeScreenState extends State<APHHomeScreen> {
   }
 }
 
+class InformeCard extends StatelessWidget {
+  final String nombre;
+  final String ubicacion;
+  final String salon;
+  final String descripcion;
+  final String prioridad;
+  final Color prioridadColor;
+  final Color textColor;
+  final bool isAwaitingAssignment;
+  final bool isAssigned;
+  final VoidCallback onTap;
+
+  const InformeCard({
+    required this.nombre,
+    required this.ubicacion,
+    required this.salon,
+    required this.descripcion,
+    required this.prioridad,
+    required this.prioridadColor,
+    required this.textColor,
+    this.isAwaitingAssignment = false,
+    this.isAssigned = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 3,
+        color: prioridadColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                  child:   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nombre,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Ubicación: $ubicacion   Salón: $salon',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: textColor),
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            descripcion,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor),
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: textColor),
+                            ),
+                            child: Text(
+                              prioridad,
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(
+                              isAssigned
+                                  ? Icons.check_circle_rounded
+                                  : isAwaitingAssignment
+                                  ? Icons.hourglass_bottom_rounded
+                                  : null,
+                              color: textColor,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_sharp,
+                color: textColor,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

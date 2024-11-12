@@ -2,6 +2,8 @@ import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/BoxIsPassword.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonOutlinedButton.dart';
+import 'package:appv2/Components/buildDropdownField.dart';
+import 'package:appv2/Components/enums.dart';
 import 'package:appv2/Constants/AppColors.dart';
 import 'package:appv2/Constants/constants.dart';
 import 'package:appv2/main.dart';
@@ -21,6 +23,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController relationshipWithTheUniversityController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -33,14 +36,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       isLoading = true;
     });
-
+    final String relationshipWithTheUniversity = relationshipWithTheUniversityController.text.trim();
     final String firstName = firstNameController.text.trim();
     final String lastName = lastNameController.text.trim();
     final String email = emailController.text.trim();
     final String password = passwordController.text;
     final String phone = phoneController.text.trim();
 
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || phone.isEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, completa todos los campos')),
       );
@@ -63,85 +66,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'last_names': lastName,
             'mail': email,
             'phone_number': phone,
-            'relationship_with_the_university': 'Student'
+            'relationshipWithTheUniversity': relationshipWithTheUniversity
           },
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 ) {
         final responseData = jsonDecode(response.body);
 
         final String token = responseData['access_token'] ?? 'Sin asignar';
-        final String roles = responseData['roles'] ?? 'Sin asignar';
-        final String userid = responseData['userid'] ?? 'Sin asignar';
-        final String names = responseData['names'] ?? 'Sin asignar';
-        final String lastName = responseData['lastNames'] ?? 'Sin asignar';
-        final String mail = responseData['mail'] ?? 'Sin asignar';
-        final String phone_number = responseData['phone_number'] ?? 'Sin asignar';
-        final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ?? 'Sin asignar';
+          if(token != 'Sin asignar') {
+            final String roles = responseData['roles'] ?? 'Sin asignar';
+            final String userid = responseData['userid'] ?? 'Sin asignar';
+            final String names = responseData['names'] ?? 'Sin asignar';
+            final String lastName = responseData['lastNames'] ?? 'Sin asignar';
+            final String mail = responseData['mail'] ?? 'Sin asignar';
+            final String phone_number = responseData['phone_number'] ??
+                'Sin asignar';
+            final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ??
+                'Sin asignar';
 
-        final String idUniversity = responseData['userDetails']?['idUniversity']?.toString() ?? 'Sin asignar';
-        final String documentType = responseData['userDetails']?['documentType'] ?? 'Sin asignar';
-        final String documentNumber = responseData['userDetails']?['documentNumber'] ?? 'Sin asignar';
-        final String address = responseData['userDetails']?['address'] ?? 'Sin asignar';
-        final String emergencyContactPhoneNumber = responseData['userDetails']?['emergencyContactPhoneNumber']?.toString() ?? '';
-        final String birthday = responseData['userDetails']?['birthday'] ?? 'Sin asignar';
-        final String bloodType = responseData['userDetails']?['bloodType'] ?? 'Sin asignar';
-        final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
-        final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
-        final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', token);
-        if(roles == 'upb_community_accounts'){
-          await prefs.setString('roles', 'Comunidad UPB');
-        }
-        if(roles == 'prehospital_care_accounts'){
-          await prefs.setString('roles', 'APH');
-        }
-        await prefs.setString('relationshipWithTheUniversity', relationshipWithTheUniversity);
-        await prefs.setString('roles_partition_key', roles);
-        await prefs.setString('userid', userid);
-        await prefs.setString('names', names);
-        await prefs.setString('lastNames', lastName);
-        await prefs.setString('mail', mail);
-        await prefs.setString('phone_number', phone_number);
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('jwt_token', token);
+            if (roles == 'upb_community_accounts') {
+              await prefs.setString('roles', 'Comunidad UPB');
+            }
+            if (roles == 'prehospital_care_accounts') {
+              await prefs.setString('roles', 'APH');
+            }
+            await prefs.setString(
+                'relationshipWithTheUniversity', relationshipWithTheUniversity);
+            await prefs.setString('roles_partition_key', roles);
+            await prefs.setString('userid', userid);
+            await prefs.setString('names', names);
+            await prefs.setString('lastNames', lastName);
+            await prefs.setString('mail', mail);
+            await prefs.setString('phone_number', phone_number);
 
-        await prefs.setString('idUniversity', idUniversity);
-        await prefs.setString('documentType', documentType);
-        await prefs.setString('documentNumber', documentNumber);
-        await prefs.setString('address', address);
-        await prefs.setString('emergencyContactPhoneNumber', emergencyContactPhoneNumber);
-        await prefs.setString('birthday', birthday);
-        await prefs.setString('bloodType', bloodType);
-        await prefs.setString('allergies', allergies);
-        await prefs.setString('dependentMedications', dependentMedications);
-        await prefs.setString('disabilities', disabilities);
 
-        final webSocketService = WebSocketService();
-        await webSocketService.connect();
+            final webSocketService = WebSocketService();
+            await webSocketService.connect();
 
-        if (responseData['roles'] == 'prehospital_care_accounts') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => APHHomeScreen()),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => BrigaHomescreen()),
-          );
-        }
+            if (responseData['roles'] == 'prehospital_care_accounts') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => APHHomeScreen()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => BrigaHomescreen()),
+              );
+            }
 
-        firstNameController.clear();
-        lastNameController.clear();
-        emailController.clear();
-        passwordController.clear();
-        phoneController.clear();
+            firstNameController.clear();
+            lastNameController.clear();
+            emailController.clear();
+            passwordController.clear();
+            phoneController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registro exitoso')),
-        );
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Registro exitoso')),
+
+            );
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('La cuenta ya existe')),
+            );
+          }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error en el registro: ${response.body}')),
@@ -204,6 +197,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   bottomHelperText: 'Ingresa tu número de celular',
                   controller: phoneController,
                   inputType: TextInputType.phone,
+                ),
+                BuildDropdownField<RelationshipWithTheUniversity>(
+                    topLabel: 'Relación con la universidad',
+                    bottomHelperText: '',
+                    items: RelationshipWithTheUniversity.values,
+                    controller: relationshipWithTheUniversityController
                 ),
                 const SizedBox(height: 10),
                 Boxispassword(

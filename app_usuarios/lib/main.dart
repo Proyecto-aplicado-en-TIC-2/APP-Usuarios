@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     const basilTheme = BasilTheme();
 
     return MaterialApp(
-      title: 'Basil',
+      title: 'Gestion de riesgos UPB',
       theme: basilTheme.toThemeData(), // Aplica BasilTheme como tema principal
       home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
@@ -82,6 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['operation'] == true && responseData['access_token'] != null) {
+          print('=============================================');
+          print(responseData);
+          print('=============================================');
           final String token = responseData['access_token'] ?? 'Sin asignar';
           final String roles = responseData['roles'] ?? 'Sin asignar';
           final String userid = responseData['userid'] ?? 'Sin asignar';
@@ -101,6 +104,13 @@ class _LoginScreenState extends State<LoginScreen> {
           final String allergies = responseData['userDetails']?['allergies'] ?? 'Sin asignar';
           final String dependentMedications = responseData['userDetails']?['dependentMedications'] ?? 'Sin asignar';
           final String disabilities = responseData['userDetails']?['disabilities'] ?? 'Sin asignar';
+          final String in_service = responseData['in_service'].toString();
+          print('============================');
+          print(in_service);
+          print('============================');
+          final String quadrant = responseData['quadrant'] ?? 'Sin asignar';
+          print(quadrant);
+
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', token);
@@ -109,6 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           if(roles == 'prehospital_care_accounts'){
             await prefs.setString('roles', 'APH');
+          }
+          if(roles == 'brigade_accounts'){
+            await prefs.setString('roles', 'Brigadista');
           }
           await prefs.setString('relationshipWithTheUniversity', relationshipWithTheUniversity);
           await prefs.setString('roles_partition_key', roles);
@@ -128,6 +141,12 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.setString('allergies', allergies);
           await prefs.setString('dependentMedications', dependentMedications);
           await prefs.setString('disabilities', disabilities);
+          if(in_service == 'true'){
+            await prefs.setBool('in_service', true);
+          }else{
+            await prefs.setBool('in_service', false);
+          }
+          await prefs.setString('quadrant', quadrant);
 
           final webSocketService = WebSocketService();
           await webSocketService.connect();
