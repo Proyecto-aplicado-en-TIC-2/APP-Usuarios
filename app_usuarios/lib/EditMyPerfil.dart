@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:appv2/APH/CustonBottomNavigationBar.dart';
+import 'package:appv2/Brigadistas/BrigaHome.dart';
 import 'package:appv2/Components/Box.dart';
 import 'package:appv2/Components/Button.dart';
 import 'package:appv2/Components/CustonAppbar.dart';
@@ -184,11 +186,19 @@ class _EditMyPerfil extends State<EditMyPerfil> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Operacn exitosa')),
         );
-
+        String? roles_partition_key =  prefs.getString('roles_partition_key');
         // Regresar a la pantalla anterior después de que se complete la operación
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => MiPerfilScreen())).then((_) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        });
+        if (roles_partition_key == 'prehospital_care_accounts') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const CustomBottomNavigation(initialIndex: 0,)),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) =>  const BrigaHomescreen()),
+          );
+        }
       } else {
         throw Exception('Error en la operación. Código de estado: ${response.statusCode}');
       }

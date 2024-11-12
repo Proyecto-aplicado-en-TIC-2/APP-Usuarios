@@ -71,60 +71,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 ) {
         final responseData = jsonDecode(response.body);
 
         final String token = responseData['access_token'] ?? 'Sin asignar';
-        final String roles = responseData['roles'] ?? 'Sin asignar';
-        final String userid = responseData['userid'] ?? 'Sin asignar';
-        final String names = responseData['names'] ?? 'Sin asignar';
-        final String lastName = responseData['lastNames'] ?? 'Sin asignar';
-        final String mail = responseData['mail'] ?? 'Sin asignar';
-        final String phone_number = responseData['phone_number'] ?? 'Sin asignar';
-        final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ?? 'Sin asignar';
+          if(token != 'Sin asignar') {
+            final String roles = responseData['roles'] ?? 'Sin asignar';
+            final String userid = responseData['userid'] ?? 'Sin asignar';
+            final String names = responseData['names'] ?? 'Sin asignar';
+            final String lastName = responseData['lastNames'] ?? 'Sin asignar';
+            final String mail = responseData['mail'] ?? 'Sin asignar';
+            final String phone_number = responseData['phone_number'] ??
+                'Sin asignar';
+            final String relationshipWithTheUniversity = responseData['relationshipWithTheUniversity'] ??
+                'Sin asignar';
 
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', token);
-        if(roles == 'upb_community_accounts'){
-          await prefs.setString('roles', 'Comunidad UPB');
-        }
-        if(roles == 'prehospital_care_accounts'){
-          await prefs.setString('roles', 'APH');
-        }
-        await prefs.setString('relationshipWithTheUniversity', relationshipWithTheUniversity);
-        await prefs.setString('roles_partition_key', roles);
-        await prefs.setString('userid', userid);
-        await prefs.setString('names', names);
-        await prefs.setString('lastNames', lastName);
-        await prefs.setString('mail', mail);
-        await prefs.setString('phone_number', phone_number);
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('jwt_token', token);
+            if (roles == 'upb_community_accounts') {
+              await prefs.setString('roles', 'Comunidad UPB');
+            }
+            if (roles == 'prehospital_care_accounts') {
+              await prefs.setString('roles', 'APH');
+            }
+            await prefs.setString(
+                'relationshipWithTheUniversity', relationshipWithTheUniversity);
+            await prefs.setString('roles_partition_key', roles);
+            await prefs.setString('userid', userid);
+            await prefs.setString('names', names);
+            await prefs.setString('lastNames', lastName);
+            await prefs.setString('mail', mail);
+            await prefs.setString('phone_number', phone_number);
 
 
-        final webSocketService = WebSocketService();
-        await webSocketService.connect();
+            final webSocketService = WebSocketService();
+            await webSocketService.connect();
 
-        if (responseData['roles'] == 'prehospital_care_accounts') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => APHHomeScreen()),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => BrigaHomescreen()),
-          );
-        }
+            if (responseData['roles'] == 'prehospital_care_accounts') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => APHHomeScreen()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => BrigaHomescreen()),
+              );
+            }
 
-        firstNameController.clear();
-        lastNameController.clear();
-        emailController.clear();
-        passwordController.clear();
-        phoneController.clear();
+            firstNameController.clear();
+            lastNameController.clear();
+            emailController.clear();
+            passwordController.clear();
+            phoneController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registro exitoso')),
-        );
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Registro exitoso')),
+
+            );
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('La cuenta ya existe')),
+            );
+          }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error en el registro: ${response.body}')),

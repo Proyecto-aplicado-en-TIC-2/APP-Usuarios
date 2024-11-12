@@ -1,5 +1,7 @@
+import 'package:appv2/Constants/AppColors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -30,19 +32,53 @@ class WebSocketService {
     }
   }
 
-  Future<void> _showNotification(String title, String message) async {
-    const androidDetails = AndroidNotificationDetails(
-      'gloval_warning_channel', 'Global Warnings',
-      channelDescription: 'Channel for global warnings',
+  Future<void> _showNotification(String title, String message, String _summaryText) async {
+    var androidDetails = AndroidNotificationDetails(
+      'showNotification_UPBSegura',
+      'showNotification_UPBSegura',
+      channelDescription: 'Channel for showNotification_UPBSegura',
       importance: Importance.max,
       priority: Priority.high,
-    );
+      enableVibration: true,
 
-    const platformDetails = NotificationDetails(android: androidDetails);
+      styleInformation: BigTextStyleInformation(
+        message,
+        contentTitle: title,
+        summaryText: _summaryText,
+      ),
+      playSound: true, // Activar sonido personalizado si se desea
+    );
+    var platformDetails = NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
       0, title, message, platformDetails,
     );
   }
+
+
+  Future<void> _showNotificationGlovalWarning(String title, String message,) async {
+    var androidDetails = AndroidNotificationDetails(
+      'gloval_warning_channel',
+      'Global Warnings',
+      channelDescription: 'Channel for global warnings',
+      importance: Importance.max,
+      priority: Priority.high,
+      enableVibration: true,
+
+      styleInformation: BigTextStyleInformation(
+        message,
+        contentTitle: title,
+        summaryText: 'Atención',
+      ),
+      playSound: true, // Activar sonido personalizado si se desea
+    );
+    var platformDetails = NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(
+      0, title, message, platformDetails,
+    );
+  }
+
+
+
 
 
 
@@ -74,7 +110,12 @@ class WebSocketService {
     // Escuchar el evento `APH_case`, mostrar notificación y almacenar datos en SharedPreferences
     socket!.on('APH_case', (data) async {
       print('Mensaje de APH_case recibido: $data');
-      _showNotification("Caso APH", data.toString());
+
+      _showNotification(
+        "Nuevo caso asignado",
+        'Se le a asignado un caso nuevo revisar sus casos asignados',
+        'Caso'
+      );
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final String caseId = data['Id_reporte'];
@@ -89,8 +130,23 @@ class WebSocketService {
     // Escuchar el evento `GlovalWarning` y mostrar notificación
     socket!.on('GlovalWarning', (data) {
       print('Mensaje de GlovalWarning recibido: $data');
-      _showNotification("Alerta Global", data.toString());
+      print(data['data']['emergencia'].toString());
+
+      if (data['data']['emergencia'].toString() == 'Simulacro') {
+        _showNotificationGlovalWarning(
+            "Simulacro",
+            'Esto es un simulacro evacuar de manera ordenada'
+        );
+      } else {
+        _showNotificationGlovalWarning(
+            "Alerta Global!!!",
+            'Esto no es un simulacro se detectó un ${data['data']['emergencia']} '
+                'Por favor evacuar en base a los protocolos de seguridad'
+        );
+      }
     });
+
+
 
     socket!.on('Report_assign', (data) async {
       print('Report_assign: $data');
@@ -100,7 +156,11 @@ class WebSocketService {
       await prefs.setString('APH_phone', data['APH_phone']);
       await prefs.setString('APH_time', data['APH_time']);
       await prefs.setBool('APH_ok', true);
-      _showNotification("Informe Asignado", data.toString());
+      _showNotification(
+          "Informe asignado",
+          'Se le a asignado un APH en espera de una confirmacion ',
+          'APH asignado'
+      );
       newIncidentNotifier.value = !newIncidentNotifier.value;
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
@@ -111,6 +171,11 @@ class WebSocketService {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool('on_the_way', true);
       }
+      _showNotification(
+          "En camino",
+          'El aph a confirmado su caso y va en camino ',
+          'APH en camino'
+      );
       newIncidentNotifier.value = !newIncidentNotifier.value;
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
@@ -132,7 +197,11 @@ class WebSocketService {
 
       // Guardar el mapa actualizado en SharedPreferences
       await prefs.setString('brigadistaAssignments', jsonEncode(brigadistaAssignments));
-
+      _showNotification(
+          "Brigadista ayudante",
+          'Se le a asignado un brigadista para que lo acompañe en el caso',
+          'Brigadista en camino'
+      );
       // Notificar cambios
       WebSocketService.newIncidentNotifier.value = !WebSocketService.newIncidentNotifier.value;
     });
@@ -146,6 +215,12 @@ class WebSocketService {
       String jsonData = jsonEncode(data);
 
       await prefs.setString('Brigadista_case', jsonData);
+
+          _showNotification(
+          "Asignado a un caso",
+          'Se le a asignado como un acompañe en un caso dirijirse en el acompañamiento de del APH',
+          'dirijirse al caso'
+      );
       newIncidentNotifier.value = !newIncidentNotifier.value;
 
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
@@ -154,12 +229,15 @@ class WebSocketService {
       print('Close_incident_broadcast: $data');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('Close_incident_broadcast', true);
+      _showNotification(
+          "Caso cerrado",
+          'Se a cerrado el caso correctamente',
+          ''
+      );
+
       newIncidentNotifier.value = !newIncidentNotifier.value;
       // Puedes agregar aquí lógica para notificar la actualización en la UI si es necesario
     });
-
-
-
 
 
     socket!.onDisconnect((_) => print('Desconectado del WebSocket'));
