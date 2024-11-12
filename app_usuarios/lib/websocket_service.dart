@@ -78,10 +78,6 @@ class WebSocketService {
   }
 
 
-
-
-
-
   Future<void> connect() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwt_token');

@@ -230,7 +230,7 @@ class _APHInformePendienteScreenState extends State<APHInformePendienteScreen> {
             Box(
                 topLabel: 'Apellidos',
                 bottomHelperText: '',
-                controller: namesController,
+                controller: lastNamesController,
                 inputType: TextInputType.name
             ),
             BuildDropdownField<DocumetType>(
