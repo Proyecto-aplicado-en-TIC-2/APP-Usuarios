@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class APIConstants{
 
   static const String local = 'http://localhost:3000';
-  static const String azure_testing = 'https://gdr-container-testing.livelybay-5b00af3d.centralus.azurecontainerapps.io';
+  static const String azure_testing = 'https://gdr-container-testing.wonderfulforest-6ce2d1ba.centralus.azurecontainerapps.io/';
   static const String baseUrl = azure_testing;
   static const String registerEndpoint = '$baseUrl/auth/register/upb-community';
   static const String logInEndpoint = '$baseUrl/auth/login';
